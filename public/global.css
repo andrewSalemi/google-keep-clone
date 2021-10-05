@@ -1,3 +1,18 @@
+:root {
+  /* Colors */
+  --btn-icon-fill: rgb(95, 99, 104);
+  --btn-hover-bg: rgba(60, 64, 67, 0.08);
+
+  --color-gray-light-1: rgb(241, 243, 245);
+  --color-gray-light-2: rgb(222, 226, 230);
+
+  --color-gray-dark-1: rgb(95, 99, 104);
+
+  --background-dark: rgb(241, 243, 244);
+
+  --box-shadow-standard: 0 1px 1px 0 rgba(65, 69, 73, 0.3);
+}
+
 *,
 *::before,
 *::after {
@@ -11,8 +26,4 @@ html {
   font-size: 62.5%;
 
   box-sizing: border-box;
-}
-
-body {
-  font-family: "Roboto", sans-serif;
 }

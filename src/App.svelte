@@ -1,33 +1,14 @@
 <script>
-	export let name;
+  import Header from "./components/Header.svelte";
 </script>
 
-<main>
-	<h1 class="heading-1">Hello <span class="heading-1__span">{name}!</span></h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<div class="header-wrapper">
+  <Header />
+</div>
 
 <style lang="scss">
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	.heading-1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-		&__span {
-			font-size: 9rem;
-		}
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+  .header-wrapper {
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--color-gray-light-2);
+  }
 </style>
