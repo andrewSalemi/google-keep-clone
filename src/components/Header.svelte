@@ -72,7 +72,7 @@
 
       background-color: var(--background-dark);
       border-radius: 0.8rem;
-      padding: 0 1.2rem;
+      padding: 0.2rem 0.8rem;
 
       margin-right: auto;
 
@@ -95,9 +95,11 @@
       height: 100%;
       width: 100%;
 
+      font-family: inherit;
       font-size: 1.8rem;
+      font-weight: 400;
 
-      margin-left: 1.6rem;
+      margin-left: 1.8rem;
       margin-right: auto;
 
       flex: 1;
@@ -107,7 +109,7 @@
       background-color: transparent;
 
       &::placeholder {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 400;
       }
     }
@@ -131,6 +133,8 @@
       width: 3.2rem;
 
       border-radius: 50%;
+
+      cursor: pointer;
 
       display: inline-block;
     }
