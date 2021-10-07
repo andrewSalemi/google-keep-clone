@@ -10,6 +10,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
+    "autosize": "^5.0.1",
     "prettier": "^2.4.1",
     "prettier-plugin-svelte": "^2.4.0",
     "rollup": "^2.3.4",

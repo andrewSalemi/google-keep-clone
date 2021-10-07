@@ -1,56 +1,95 @@
 <script>
   import Btn from "./Btn.svelte";
+  import autosize from "autosize";
+
+  let closed = true;
+  let placeholderText = "Scrivi una nota...";
 </script>
 
-<section class="note">
-  <input class="note__title" type="text" placeholder="Titolo" />
-  <input class="note__content" type="text" placeholder="Scrivi una nota" />
-  <div class="note__btn-1">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-2">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-3">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-4">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-5">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-6">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-7">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-8">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-  <div class="note__btn-9">
-    <Btn iconName="lightbulb" btnXSmall={true} />
-  </div>
-
-  <span class="note__close">Chiudi</span>
+<section class="note" class:note--closed={closed === true}>
+  <input
+    class="note__title"
+    type="text"
+    placeholder={placeholderText}
+    on:click={() => {
+      closed = false;
+      placeholderText = "Titolo";
+      console.log(closed);
+    }}
+  />
+  {#if !closed}
+    <textarea
+      on:input={(event) => autosize(event.target)}
+      class="note__content"
+      type="text"
+      placeholder="Scrivi una nota..."
+    />
+    <div class="note__btn-1">
+      <Btn iconName="pin" btnXSmall={true} />
+    </div>
+    <div class="note__actions">
+      <div class="note__btn-2">
+        <Btn iconName="bellPlus" btnXSmall={true} />
+      </div>
+      <div class="note__btn-3">
+        <Btn iconName="userPlus" btnXSmall={true} />
+      </div>
+      <div class="note__btn-4">
+        <Btn iconName="palette" btnXSmall={true} />
+      </div>
+      <div class="note__btn-5">
+        <Btn iconName="image" btnXSmall={true} />
+      </div>
+      <div class="note__btn-6">
+        <Btn iconName="archive" btnXSmall={true} />
+      </div>
+      <div class="note__btn-7">
+        <Btn iconName="dots" btnXSmall={true} />
+      </div>
+      <div class="note__btn-8">
+        <Btn iconName="undo" btnXSmall={true} />
+      </div>
+      <div class="note__btn-9">
+        <Btn iconName="undo" btnXSmall={true} />
+      </div>
+      <button
+        class="note__close"
+        on:click={() => {
+          closed = true;
+          placeholderText = "Scrivi una nota...";
+        }}>Chiudi</button
+      >
+    </div>
+  {:else}
+    <div class="note__actions">
+      <div class="note__btn-10">
+        <Btn iconName="checkBoxed" btnSmall={true} />
+      </div>
+      <div class="note__btn-11">
+        <Btn iconName="brush" btnSmall={true} />
+      </div>
+      <div class="note__btn-12">
+        <Btn iconName="image" btnSmall={true} />
+      </div>
+    </div>
+  {/if}
 </section>
 
 <style lang="scss">
   .note {
     width: 60rem;
 
-    border: 8px;
-    padding: 0.4rem 1rem 1.2rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-gray-light-1);
     box-shadow: 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
 
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    row-gap: 1.2rem;
-    column-gap: 1rem;
+    grid-template-columns: 1fr 2.3rem;
+    row-gap: 1rem;
+    padding-top: 0.4rem;
 
     &__title {
-      grid-column: 1 / span 8;
+      grid-column: 1 / 2;
     }
 
     &__content {
@@ -59,29 +98,87 @@
 
     &__title,
     &__content {
-      font-size: 1.6rem;
-      font-weight: 500;
       line-height: 1;
       color: var(--color-gray-dark-2);
 
       border: none;
       background: transparent;
+      padding: 1rem 1.8rem;
 
       outline: none;
 
       &::placeholder {
-        font-family: inherit;
         font-weight: 500;
         color: var(--color-gray-dark-1);
       }
     }
 
+    &__title {
+      font-size: 1.6rem;
+      font-weight: 500;
+    }
+
+    &__content {
+      font-family: inherit;
+      font-size: 1.4rem;
+
+      height: auto;
+      max-height: 25rem;
+      resize: none;
+    }
+
     &__btn-1 {
-      grid-column: 9 / 10;
+      grid-column: 2 / 3;
       grid-row: 1 / 2;
+
+      align-self: center;
+      justify-self: center;
+      padding-right: 2rem;
+    }
+
+    &__btn-9 {
+      transform: rotateY(180deg);
+    }
+
+    &__actions {
+      padding: 0.5rem 1rem;
+
+      grid-column: 1 / -1;
+
+      display: flex;
+      align-items: center;
+      gap: 2rem;
     }
 
     &__close {
+      font-size: 1.4rem;
+
+      background-color: transparent;
+
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      padding: 0.8rem 2.4rem;
+      margin-left: auto;
+      margin-right: 1.5rem;
+
+      &:hover {
+        background-color: var(--sidenav-item-hover);
+      }
+    }
+
+    &--closed {
+      display: flex;
+      align-items: center;
+
+      & > .note__title {
+        width: 100%;
+        margin-right: auto;
+      }
+
+      & > .note__actions {
+        gap: 0.5rem;
+      }
     }
   }
 </style>
