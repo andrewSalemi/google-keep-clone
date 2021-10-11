@@ -1,5 +1,7 @@
 <script>
   import Btn from "./Btn.svelte";
+  let searchInput;
+  let searchValue = "";
 </script>
 
 <header class="header">
@@ -13,18 +15,28 @@
 
   <div class="header__searchbar">
     <Btn class="btn--search" iconName="search" btnSmall={true} />
-    <input type="text" class="header__input" placeholder="Cerca" />
-    <Btn class="btn--clear" iconName="close" btnSmall={true} />
+    <input type="text" class="header__input" placeholder="Cerca" bind:this={searchInput} bind:value={searchValue} />
+    {#if searchValue.length > 0}
+      <Btn
+        class="btn--clear"
+        iconName="close"
+        btnSmall={true}
+        on:click={() => {
+          searchValue = "";
+          searchInput.focus();
+        }}
+      />
+    {/if}
   </div>
 
   <div class="header__utility-btn">
-    <Btn class="btn--clear" iconName="refresh" />
-    <Btn class="btn--clear" iconName="agenda" />
-    <Btn class="btn--clear" iconName="settings" />
+    <Btn class="btn--refresh" iconName="refresh" />
+    <Btn class="btn--display" iconName="agenda" />
+    <Btn class="btn--settings" iconName="settings" />
   </div>
 
   <div class="header__user-panel">
-    <Btn class="btn--clear" iconName="app" />
+    <Btn class="btn--apps" iconName="app" />
     <img class="header__profile" src="assets/images/pro-pic.jpg" alt="User profile" />
   </div>
 </header>
@@ -43,7 +55,7 @@
       align-items: center;
       gap: 0.4rem;
 
-      padding-right: 9.2rem;
+      padding-right: 8.8rem;
     }
 
     &__position {
@@ -68,11 +80,11 @@
     // SEARCH
     &__searchbar {
       height: 100%;
-      width: 40%;
+      width: 38%;
 
       background-color: var(--background-dark);
       border-radius: 0.8rem;
-      padding: 0.2rem 0.8rem;
+      padding: 0.2rem 0.75rem;
 
       margin-right: auto;
 
@@ -92,6 +104,7 @@
     }
 
     &__input {
+      font-size: 0.9rem;
       height: 100%;
       width: 100%;
 
@@ -99,7 +112,7 @@
       font-size: 1.8rem;
       font-weight: 400;
 
-      margin-left: 1.8rem;
+      margin-left: 1rem;
       margin-right: auto;
 
       flex: 1;
@@ -109,7 +122,7 @@
       background-color: transparent;
 
       &::placeholder {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
         font-weight: 400;
       }
     }
@@ -122,7 +135,7 @@
     }
 
     &__utility-btn {
-      margin-right: 1.6rem;
+      margin-right: 2.6rem;
 
       display: flex;
       align-items: center;
@@ -133,6 +146,7 @@
       width: 3.2rem;
 
       border-radius: 50%;
+      margin-left: 0.4rem;
 
       cursor: pointer;
 

@@ -27,13 +27,30 @@
       <a href="#Cestino" class="list__link">Cestino</a>
     </li>
   </ul>
+  <div class="sidenav__copyright">
+    <p>Licenze open</p>
+  </div>
 </nav>
 
 <style lang="scss">
   .sidenav {
     height: 100%;
     width: fit-content;
+
     padding-top: 0.8rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &__copyright {
+      font-size: 1.2rem;
+      font-weight: 200;
+      color: var(--color-gray-dark-1);
+
+      margin-top: auto;
+      margin-left: 2.4rem;
+    }
   }
 
   .list {
@@ -44,13 +61,14 @@
 
     &__item {
       padding: 1.2rem;
+      padding-right: 7.2rem;
       border-radius: 0 2.5rem 2.5rem 0;
 
       cursor: pointer;
 
       display: flex;
       align-items: center;
-      gap: 3.6rem;
+      gap: 3rem;
 
       img {
         height: 2.4rem;
@@ -73,7 +91,8 @@
       text-decoration: none;
       color: var(--color-gray-dark-2);
 
-      margin-right: 5.2rem;
+      width: 100%;
+      height: 100%;
     }
 
     &--selected {

@@ -1,6 +1,12 @@
 <script>
   import Btn from "./Btn.svelte";
   import autosize from "autosize";
+  import { notes } from "../store/store";
+
+  let noteTitle = "";
+  let noteContent = "";
+  let closed = true;
+  let placeholderText = "Scrivi una nota...";
 
   function clickOutside(element, callbackFunction) {
     function onClick(event) {
@@ -21,19 +27,34 @@
     };
   }
 
-  let closed = true;
-  let placeholderText = "Scrivi una nota...";
+  let generateNote = (event) => {
+    if (event.key === "Enter") {
+      let note = { noteTitle, noteContent };
+      notes.update((currentNotes) => {
+        return [...currentNotes, note];
+      });
+      noteTitle = "";
+      noteContent = "";
+      event.target.blur();
+      closed = true;
+    }
+  };
 </script>
 
-<section class="note-generator" class:note-generator--closed={closed === true} use:clickOutside={() => (closed = true)}>
+<section
+  class="note-generator"
+  class:note-generator--closed={closed === true}
+  use:clickOutside={() => (closed = true)}
+  on:keydown={generateNote}
+>
   <input
     class="note-generator__title"
     type="text"
+    bind:value={noteTitle}
     placeholder={placeholderText}
     on:click={() => {
       closed = false;
       placeholderText = "Titolo";
-      console.log(closed);
     }}
   />
   {#if !closed}
@@ -41,6 +62,7 @@
       on:input={(event) => autosize(event.target)}
       class="note-generator__content"
       type="text"
+      bind:value={noteContent}
       placeholder="Scrivi una nota..."
     />
     <div class="note-generator__btn-1">

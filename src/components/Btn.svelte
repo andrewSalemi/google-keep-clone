@@ -4,7 +4,7 @@
   export let btnXSmall = false;
 </script>
 
-<button class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''}">
+<button class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''}" on:click>
   <img class="btn__icon" src="assets/icons/icon-{iconName}.svg" alt="Button icon" />
 </button>
 

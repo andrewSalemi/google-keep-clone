@@ -2,20 +2,20 @@
   import Btn from "./Btn.svelte";
 
   let selected = false;
+  export let title = "";
+  export let content = "";
 </script>
 
 <article class="note" class:note--selected={selected}>
   <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={() => (selected = !selected)} />
   <div class="note__header">
-    <h3 class="note__title">Title</h3>
+    <h3 class="note__title">{title}</h3>
     <div class="note__btn-1">
       <Btn iconName="pin" btnSmall={true} />
     </div>
   </div>
   <p class="note__content">
-    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quasi voluptatibus debitis nemo, quibusdam officia animi
-    consectetur aliquam accusantium. Labore dolores odio optio temporibus deleniti, excepturi magnam maiores quos?
-    Aliquid, earum?
+    {content}
   </p>
   <p />
   <div class="note__controls">
