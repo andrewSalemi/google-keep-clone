@@ -1,7 +1,7 @@
 <script>
-  export let iconName;
-  export let btnSmall;
-  export let btnXSmall;
+  export let iconName = undefined;
+  export let btnSmall = false;
+  export let btnXSmall = false;
 </script>
 
 <button class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''}">

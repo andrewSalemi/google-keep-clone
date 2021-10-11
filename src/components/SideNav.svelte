@@ -1,27 +1,30 @@
 <script>
+  import { onMount } from "svelte";
+
+  let current = "Note";
 </script>
 
 <nav class="sidenav">
   <ul class="list">
-    <li class="list__item list--selected">
+    <li class="list__item" class:list--selected={current === "note"} on:click={() => (current = "note")}>
       <img src="assets/icons/icon-lightbulb.svg" alt="Note" />
-      <a href="#" class="list__link">Note</a>
+      <a href="#Note" class="list__link">Note</a>
     </li>
-    <li class="list__item">
+    <li class="list__item" class:list--selected={current === "promemoria"} on:click={() => (current = "promemoria")}>
       <img src="assets/icons/icon-notification.svg" alt="Note" />
-      <a href="#" class="list__link">Promemoria</a>
+      <a href="#Promemoria" class="list__link">Promemoria</a>
     </li>
-    <li class="list__item">
+    <li class="list__item" class:list--selected={current === "etichette"} on:click={() => (current = "etichette")}>
       <img src="assets/icons/icon-edit.svg" alt="Note" />
-      <a href="#" class="list__link">Modifica etichette</a>
+      <a href="#Etichette" class="list__link">Modifica etichette</a>
     </li>
-    <li class="list__item">
+    <li class="list__item" class:list--selected={current === "archivio"} on:click={() => (current = "archivio")}>
       <img src="assets/icons/icon-archive.svg" alt="Note" />
-      <a href="#" class="list__link">Archivio</a>
+      <a href="#Archivio" class="list__link">Archivio</a>
     </li>
-    <li class="list__item">
+    <li class="list__item" class:list--selected={current === "cestino"} on:click={() => (current = "cestino")}>
       <img src="assets/icons/icon-delete.svg" alt="Note" />
-      <a href="#" class="list__link">Cestino</a>
+      <a href="#Cestino" class="list__link">Cestino</a>
     </li>
   </ul>
 </nav>
@@ -76,6 +79,9 @@
     &--selected {
       background-color: var(--sidenav-item-selected);
 
+      &:hover {
+        background-color: var(--sidenav-item-selected);
+      }
       img {
         opacity: 85%;
       }
