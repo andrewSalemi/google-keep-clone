@@ -5,4 +5,52 @@ export const notes = writable([
     noteTitle: "Ciao",
     noteContent: "Content",
   },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
+  {
+    noteTitle: "Ciao",
+    noteContent: "Content",
+  },
 ]);

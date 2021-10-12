@@ -2,56 +2,57 @@
   font-family: "Product Sans Medium Regular";
   font-style: normal;
   font-weight: 500;
-  src: local("Product Sans Medium Regular"), url("ProductSans-Medium.woff") format("woff");
+  src: local("Product Sans Medium Regular"), url("assets/fonts/Product-Sans/ProductSans-Medium.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Black Regular";
   font-style: normal;
   font-weight: 400;
-  src: local("Product Sans Black Regular"), url("ProductSans-Black.woff") format("woff");
+  src: local("Product Sans Black Regular"), url("assets/fonts/Product-Sans/ProductSans-Black.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Thin Italic";
-  font-style: normal;
+  font-style: italic;
   font-weight: 100;
-  src: local("Product Sans Thin Italic"), url("ProductSans-ThinItalic.woff") format("woff");
+  src: local("Product Sans Thin Italic"), url("assets/fonts/Product-Sans/ProductSans-ThinItalic.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Light Italic";
-  font-style: normal;
+  font-style: italic;
   font-weight: 200;
-  src: local("Product Sans Light Italic"), url("ProductSans-LightItalic.woff") format("woff");
+  src: local("Product Sans Light Italic"), url("assets/fonts/Product-Sans/ProductSans-LightItalic.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Medium Italic";
   font-style: italic;
   font-weight: 500;
-  src: local("Product Sans Medium Italic"), url("ProductSans-MediumItalic.woff") format("woff");
+  src: local("Product Sans Medium Italic"),
+    url("assets/fonts/Product-Sans/ProductSans-MediumItalic.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Bold";
   font-style: normal;
   font-weight: 700;
-  src: local("Product Sans Bold"), url("ProductSans-Bold.woff") format("woff");
+  src: local("Product Sans Bold"), url("assets/fonts/Product-Sans/ProductSans-Bold.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Bold Italic";
   font-style: italic;
   font-weight: 700;
-  src: local("Product Sans Bold Italic"), url("ProductSans-BoldItalic.woff") format("woff");
+  src: local("Product Sans Bold Italic"), url("assets/fonts/Product-Sans/ProductSans-BoldItalic.woff") format("woff");
 }
 
 @font-face {
   font-family: "Product Sans Black Italic";
   font-style: italic;
   font-weight: 400;
-  src: local("Product Sans Black Italic"), url("ProductSans-BlackItalic.woff") format("woff");
+  src: local("Product Sans Black Italic"), url("assets/fonts/Product-Sans/ProductSans-BlackItalic.woff") format("woff");
 }
 
 body {

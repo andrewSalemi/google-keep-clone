@@ -6,7 +6,7 @@
 
 <header class="header">
   <div class="header__sidenav">
-    <Btn class="header__menu" iconName="menu" />
+    <Btn class="header__menu" iconName="menu" on:click={() => console.log("TODO")} />
     <div class="header__position">
       <img class="header__logo" src="assets/images/keep-logo.png" alt="Keep logo" />
       <p class="header__text">Keep</p>
@@ -83,7 +83,7 @@
       width: 38%;
 
       background-color: var(--background-dark);
-      border-radius: 0.8rem;
+      border-radius: 0.9rem;
       padding: 0.2rem 0.75rem;
 
       margin-right: auto;

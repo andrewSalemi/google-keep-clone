@@ -1,6 +1,4 @@
 <script>
-  import { onMount } from "svelte";
-
   let current = "Note";
 </script>
 
@@ -28,13 +26,13 @@
     </li>
   </ul>
   <div class="sidenav__copyright">
-    <p>Licenze open</p>
+    <p>Licenze open-source</p>
   </div>
 </nav>
 
 <style lang="scss">
   .sidenav {
-    height: 100%;
+    height: calc(100vh - 6.4rem);
     width: fit-content;
 
     padding-top: 0.8rem;
@@ -44,12 +42,12 @@
     justify-content: space-between;
 
     &__copyright {
-      font-size: 1.2rem;
-      font-weight: 200;
+      font-size: 1.4rem;
+      font-weight: 400;
       color: var(--color-gray-dark-1);
 
-      margin-top: auto;
       margin-left: 2.4rem;
+      margin-bottom: 1.4rem;
     }
   }
 
@@ -58,6 +56,7 @@
 
     display: flex;
     flex-direction: column;
+    justify-content: center;
 
     &__item {
       padding: 1.2rem;
@@ -68,7 +67,7 @@
 
       display: flex;
       align-items: center;
-      gap: 3rem;
+      gap: 3.2rem;
 
       img {
         height: 2.4rem;
@@ -87,12 +86,9 @@
       font-size: 1.4rem;
       line-height: 1;
       font-weight: 500;
-      letter-spacing: 0.85px;
+      letter-spacing: 0.75px;
       text-decoration: none;
       color: var(--color-gray-dark-2);
-
-      width: 100%;
-      height: 100%;
     }
 
     &--selected {

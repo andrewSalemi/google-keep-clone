@@ -61,6 +61,9 @@
 
     transition: box-shadow 200ms ease-in, border 200ms ease-in;
 
+    ::selection {
+      background: transparent;
+    }
     &:hover {
       box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
     }
@@ -76,6 +79,9 @@
       font-size: 2rem;
       font-weight: 400;
       color: var(--color-gray-dark-2);
+
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     &__content {
@@ -83,6 +89,7 @@
       font-size: 1.6rem;
       font-weight: 400;
       color: var(--color-gray-dark-1);
+      word-wrap: break-word;
 
       margin-bottom: 0.4rem;
     }

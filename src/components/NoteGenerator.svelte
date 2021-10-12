@@ -31,7 +31,7 @@
     if (event.key === "Enter") {
       let note = { noteTitle, noteContent };
       notes.update((currentNotes) => {
-        return [...currentNotes, note];
+        return [note, ...currentNotes];
       });
       noteTitle = "";
       noteContent = "";
