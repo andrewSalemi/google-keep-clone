@@ -75,7 +75,7 @@
         <Btn iconName="userPlus" btnXSmall={true} />
       </div>
       <div class="note-generator__btn-4">
-        <Btn iconName="palette" btnXSmall={true} />
+        <Btn iconName="palette" btnXSmall={true} enabled={true} />
       </div>
       <div class="note-generator__btn-5">
         <Btn iconName="image" btnXSmall={true} />

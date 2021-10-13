@@ -5,6 +5,9 @@
   export let content = "";
   export let title = "";
 
+  export let hovered = false;
+  export let dragged = false;
+
   let selected = false;
 
   const dispatch = createEventDispatcher();
@@ -17,7 +20,17 @@
   };
 </script>
 
-<article class="note" class:note--selected={selected}>
+<article
+  class="note"
+  class:note--selected={selected}
+  class:hovered
+  class:dragged
+  draggable="true"
+  on:dragstart
+  on:dragenter
+  on:drop
+  ondragover="return false"
+>
   <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={handleSelection} />
   <div class="note__header">
     <h3 class="note__title">{title}</h3>
@@ -71,7 +84,7 @@
     display: flex;
     flex-direction: column;
 
-    transition: box-shadow 200ms ease-in, border 200ms ease-in;
+    transition: all 200ms ease-in;
 
     ::selection {
       background: transparent;
@@ -160,5 +173,14 @@
     &--selected:hover > &__controls {
       opacity: 0;
     }
+  }
+
+  .dragged {
+    opacity: 20%;
+    transform: translateY(5px);
+  }
+  .hovered {
+    box-shadow: 0 5px 2rem 2px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
   }
 </style>

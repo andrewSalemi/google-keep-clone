@@ -7,18 +7,22 @@
   import { selectedNotes } from "./store/selectedNotes";
   import { flip } from "svelte/animate";
 
-  let hovered = false;
+  let currentlyDragged = -1;
+  let currentlyHovered = -1;
 
   // Drag and Drop
   let startDrag = (event, noteIdx) => {
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.dropEffect = "move";
     const start = noteIdx;
+    currentlyDragged = noteIdx;
     event.dataTransfer.setData("text/plain", start); // Storing note idx for next the next event
     console.log("Start drag");
   };
 
   let handleDrop = (event, noteHoverIdx) => {
+    currentlyDragged = -1;
+    currentlyHovered = -1;
     console.log("dropped");
     event.dataTransfer.dropEffect = "move";
     const start = parseInt(event.dataTransfer.getData("text/plain"));
@@ -34,8 +38,6 @@
       }
       return oldNotes;
     });
-
-    hovered = -1;
   };
 
   // Selection
@@ -52,42 +54,47 @@
     }
     console.log($selectedNotes);
   };
+
+  // Searching
+  let heandleSearch = (event) => {
+    const searchValue = event.detail.searchValue;
+    console.log(searchValue);
+  };
 </script>
 
-<div class="header">
-  <Header />
-</div>
+<div class="header"><Header /></div>
+
+<div class="sidenav"><SideNav /></div>
 
 <main class="main">
-  <div class="main__sidenav">
-    <SideNav />
+  <div on:do class="main__generator">
+    <NoteGenerator />
   </div>
-  <section class="main__section">
-    <div on:do class="main__generator">
-      <NoteGenerator />
-    </div>
-    <div class="main__notes">
-      {#each $notes as note, idx (note)}
-        <div
-          class="main__note"
-          class:hovered={hovered === idx}
-          draggable="true"
-          on:dragstart={(event) => startDrag(event, idx)}
-          on:drop|preventDefault={(event) => handleDrop(event, idx)}
-          on:dragenter={() => (hovered = idx)}
-          ondragover="return false"
-          animate:flip={{ duration: 200 }}
-        >
-          <!-- ondragover="return false stop the default behaviour" -->
-          <Note
-            title={note.noteTitle}
-            content={note.noteContent}
-            on:selection={(event) => handleSelection(event, idx)}
-          />
-        </div>
-      {/each}
-    </div>
-  </section>
+  <div
+    class="main__notes"
+    on:dragend={() => {
+      currentlyDragged = -1;
+      currentlyHovered = -1;
+    }}
+  >
+    {#each $notes as note, idx (note)}
+      <div class="main__note" animate:flip={{ duration: 200 }}>
+        <!-- ondragover="return false stop the default behaviour" -->
+        <Note
+          title={note.noteTitle}
+          content={note.noteContent}
+          dragged={currentlyDragged === idx}
+          hovered={currentlyHovered === idx}
+          on:selection={(event) => handleSelection(event, idx)}
+          on:dragstart={(event) => {
+            startDrag(event, idx);
+          }}
+          on:drop={(event) => handleDrop(event, idx)}
+          on:dragenter={() => (currentlyHovered = idx)}
+        />
+      </div>
+    {/each}
+  </div>
 </main>
 
 <style lang="scss">
@@ -104,46 +111,35 @@
     z-index: 1000;
   }
 
-  .main {
-    position: absolute;
-    margin-top: 6.4rem;
-    width: 100%;
-    height: calc(100vh - 6.4rem); // screen h - header h
-    display: flex;
-    gap: 2.8rem;
+  .sidenav {
+    position: fixed;
+    height: calc(100% - 6.4rem);
+    top: 6.4rem;
+  }
 
-    &__sidenav {
-      min-width: max-content;
-      position: fixed;
-    }
-    &__section {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
+  .main {
+    width: 100%;
+    height: calc(100% - 6.4rem);
+
+    margin: 6.4rem auto 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     &__generator {
-      justify-self: center;
-      align-self: center;
       margin: 3.2rem auto 1.6rem auto;
     }
+
     &__notes {
-      margin-left: 28rem;
+      align-self: center;
+
+      margin: 2.8rem 2.8rem 0 28rem;
+
       display: flex;
       flex-wrap: wrap;
       column-gap: 2.4rem;
       row-gap: 1.8rem;
     }
-
-    &__note {
-      border-radius: 9px;
-
-      transition: all 200ms ease-in;
-    }
-  }
-
-  .hovered {
-    box-shadow: 0 5px 2rem 2px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
   }
 </style>

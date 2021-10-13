@@ -1,7 +1,14 @@
 <script>
   import Btn from "./Btn.svelte";
+  import { createEventDispatcher } from "svelte";
   let searchInput;
   let searchValue = "";
+
+  const dispatch = createEventDispatcher();
+
+  let handleSearch = (event) => {
+    dispatch("search", { searchValue: searchValue });
+  };
 </script>
 
 <header class="header">
@@ -15,7 +22,14 @@
 
   <div class="header__searchbar">
     <Btn class="btn--search" iconName="search" btnSmall={true} />
-    <input type="text" class="header__input" placeholder="Cerca" bind:this={searchInput} bind:value={searchValue} />
+    <input
+      type="text"
+      class="header__input"
+      placeholder="Cerca"
+      bind:this={searchInput}
+      bind:value={searchValue}
+      on:input={handleSearch}
+    />
     {#if searchValue.length > 0}
       <Btn
         class="btn--clear"

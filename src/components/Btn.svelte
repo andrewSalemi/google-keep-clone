@@ -2,9 +2,14 @@
   export let iconName = undefined;
   export let btnSmall = false;
   export let btnXSmall = false;
+  export let enabled = false;
 </script>
 
-<button class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''}" on:click>
+<button
+  disabled={enabled}
+  class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''} {enabled ? '' : 'btn--disabled'}"
+  on:click
+>
   <img class="btn__icon" src="assets/icons/icon-{iconName}.svg" alt="Button icon" />
 </button>
 
@@ -33,6 +38,10 @@
     &--xsmall {
       height: 3.2rem;
       width: 3.2rem;
+    }
+
+    &--disabled {
+      cursor: not-allowed;
     }
 
     &__icon {
