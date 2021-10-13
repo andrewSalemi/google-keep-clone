@@ -4,6 +4,7 @@
   import Note from "./components/Note.svelte";
   import NoteGenerator from "./components/NoteGenerator.svelte";
   import { notes } from "./store/store";
+  import { flip } from "svelte/animate";
 
   let hovered = false;
 
@@ -11,7 +12,7 @@
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.dropEffect = "move";
     const start = noteIdx;
-    event.dataTransfer.setData("text/plain", start);
+    event.dataTransfer.setData("text/plain", start); // Storing note idx for next the next event
     console.log("Start drag");
   };
 
@@ -19,20 +20,17 @@
     console.log("dropped");
     event.dataTransfer.dropEffect = "move";
     const start = parseInt(event.dataTransfer.getData("text/plain"));
-    const notesMoved = $notes;
 
     console.log(`Moving note ${start} over note ${noteHoverIdx}`);
-
-    if (start < noteHoverIdx) {
-      notesMoved.splice(noteHoverIdx + 1, 0, notesMoved[start]);
-      notesMoved.splice(start, 1);
-    } else {
-      notesMoved.splice(noteHoverIdx, 0, notesMoved[start]);
-      notesMoved.splice(start + 1, 1);
-    }
-
     notes.update((oldNotes) => {
-      return [...notesMoved];
+      if (start < noteHoverIdx) {
+        oldNotes.splice(noteHoverIdx + 1, 0, oldNotes[start]);
+        oldNotes.splice(start, 1);
+      } else {
+        oldNotes.splice(noteHoverIdx, 0, oldNotes[start]);
+        oldNotes.splice(start + 1, 1);
+      }
+      return oldNotes;
     });
 
     hovered = -1;
@@ -61,8 +59,10 @@
           on:drop|preventDefault={(event) => handleDrop(event, idx)}
           on:dragenter={() => (hovered = idx)}
           ondragover="return false"
+          animate:flip={{ duration: 200 }}
         >
-          <Note title={note.noteTitle} content={note.noteContent + " " + idx} />
+          <!-- ondragover="return false stop the default behaviour" -->
+          <Note title={note.noteTitle} content={note.noteContent} />
         </div>
       {/each}
     </div>
