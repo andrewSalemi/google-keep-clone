@@ -1,12 +1,11 @@
 <script>
   import Btn from "./Btn.svelte";
   import autosize from "autosize";
-  import { notes } from "../store/store";
+  import { notes } from "../store/notes";
 
   let noteTitle = "";
   let noteContent = "";
   let closed = true;
-  let placeholderText = "Scrivi una nota...";
 
   function clickOutside(element, callbackFunction) {
     function onClick(event) {
@@ -37,6 +36,7 @@
       noteContent = "";
       event.target.blur();
       closed = true;
+      console.log(event);
     }
   };
 </script>
@@ -51,10 +51,9 @@
     class="note-generator__title"
     type="text"
     bind:value={noteTitle}
-    placeholder={placeholderText}
+    placeholder={closed ? "Scrivi una nota..." : "Titolo"}
     on:click={() => {
       closed = false;
-      placeholderText = "Titolo";
     }}
   />
   {#if !closed}
@@ -97,7 +96,6 @@
         class="note-generator__close"
         on:click={() => {
           closed = true;
-          placeholderText = "Scrivi una nota...";
         }}>Chiudi</button
       >
     </div>
@@ -128,6 +126,11 @@
     grid-template-columns: 1fr 2.3rem;
     row-gap: 1rem;
     padding-top: 0.4rem;
+
+    &--closed {
+      padding: 0;
+      height: 4.2rem;
+    }
 
     &__title {
       grid-column: 1 / 2;

@@ -1,13 +1,24 @@
 <script>
   import Btn from "./Btn.svelte";
+  import { createEventDispatcher } from "svelte";
+
+  export let content = "";
+  export let title = "";
 
   let selected = false;
-  export let title = "";
-  export let content = "";
+
+  const dispatch = createEventDispatcher();
+
+  let handleSelection = () => {
+    selected = !selected;
+    dispatch("selection", {
+      selectionStatus: selected,
+    });
+  };
 </script>
 
 <article class="note" class:note--selected={selected}>
-  <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={() => (selected = !selected)} />
+  <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={handleSelection} />
   <div class="note__header">
     <h3 class="note__title">{title}</h3>
     <div class="note__btn-1">
@@ -50,6 +61,7 @@
     border: 1px solid #e0e0e0;
     padding: 1rem 1rem 0.4rem 1rem;
     box-shadow: none;
+    background: transparent;
 
     cursor: pointer;
     border: 2px solid var(--color-gray-light-2);

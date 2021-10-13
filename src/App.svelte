@@ -3,11 +3,13 @@
   import SideNav from "./components/SideNav.svelte";
   import Note from "./components/Note.svelte";
   import NoteGenerator from "./components/NoteGenerator.svelte";
-  import { notes } from "./store/store";
+  import { notes } from "./store/notes";
+  import { selectedNotes } from "./store/selectedNotes";
   import { flip } from "svelte/animate";
 
   let hovered = false;
 
+  // Drag and Drop
   let startDrag = (event, noteIdx) => {
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.dropEffect = "move";
@@ -34,6 +36,21 @@
     });
 
     hovered = -1;
+  };
+
+  // Selection
+  let handleSelection = (event, idx) => {
+    console.log(event.detail.selectionStatus);
+    if (!event.detail.selectionStatus) {
+      selectedNotes.update((oldSelection) => {
+        return oldSelection.filter((selection) => selection !== $notes[idx]);
+      });
+    } else {
+      selectedNotes.update((oldSelection) => {
+        return [...oldSelection, $notes[idx]];
+      });
+    }
+    console.log($selectedNotes);
   };
 </script>
 
@@ -62,7 +79,11 @@
           animate:flip={{ duration: 200 }}
         >
           <!-- ondragover="return false stop the default behaviour" -->
-          <Note title={note.noteTitle} content={note.noteContent} />
+          <Note
+            title={note.noteTitle}
+            content={note.noteContent}
+            on:selection={(event) => handleSelection(event, idx)}
+          />
         </div>
       {/each}
     </div>
@@ -110,16 +131,18 @@
       margin-left: 28rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 1.2rem;
+      column-gap: 2.4rem;
+      row-gap: 1.8rem;
     }
 
     &__note {
+      border-radius: 9px;
+
       transition: all 200ms ease-in;
     }
   }
 
   .hovered {
-    border-radius: 9px;
     box-shadow: 0 5px 2rem 2px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
   }
