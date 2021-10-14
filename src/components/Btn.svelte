@@ -6,7 +6,7 @@
 </script>
 
 <button
-  disabled={enabled}
+  disabled={!enabled}
   class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''} {enabled ? '' : 'btn--disabled'}"
   on:click
 >

@@ -1,19 +1,24 @@
 <script>
   import Btn from "./Btn.svelte";
+  import NoteColorPicker from "./NoteColorPicker.svelte";
   import { createEventDispatcher } from "svelte";
 
   export let content = "";
   export let title = "";
+  export let noteColor = "#fff";
 
   export let hovered = false;
   export let dragged = false;
 
   let selected = false;
   let showMenu = false;
-  let colorPicker;
-  let noteColor;
+  let colorPicker = false;
 
   const dispatch = createEventDispatcher();
+
+  let handleChangeColor = (event) => {
+    noteColor = event.detail.selectedColor;
+  };
 
   let handleSelection = () => {
     selected = !selected;
@@ -21,10 +26,14 @@
       selectionStatus: selected,
     });
   };
+
+  let handleDeletion = () => {
+    dispatch("delete");
+  };
 </script>
 
 <article
-  style="background-color: {noteColor};"
+  style="background-color: {noteColor}; "
   class="note"
   class:note--selected={selected}
   class:hovered
@@ -33,6 +42,7 @@
   on:dragstart
   on:dragenter
   on:drop
+  on:pointerleave={() => (showMenu = false)}
   ondragover="return false"
 >
   <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={handleSelection} />
@@ -53,53 +63,8 @@
     <div class="note__btn-3">
       <Btn iconName="userPlus" btnXSmall={true} />
     </div>
-    <div
-      class="note__btn-4"
-      on:pointerenter={() => {
-        colorPicker = true;
-      }}
-      on:pointerleave={() => {
-        colorPicker = false;
-      }}
-    >
-      <ul class="note__colors-list {colorPicker ? 'visible' : ''}">
-        <li class="note__color color color-1" title="Standard" on:click={() => (noteColor = "#fff")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-2" title="Rosso" on:click={() => (noteColor = "#f28b82")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-3" title="Arancione" on:click={() => (noteColor = "#fbbc04")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-4" title="Giallo" on:click={() => (noteColor = "#fff475")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-5" title="Verde" on:click={() => (noteColor = "#ccff90")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-6" title="Verde acqua" on:click={() => (noteColor = "#a7ffeb")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-7" title="Blu" on:click={() => (noteColor = "#cbf0f8")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-8" title="Blu scuro" on:click={() => (noteColor = "#aecbfa")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-9" title="Viola" on:click={() => (noteColor = "#d7aefb")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-10" title="Rosa" on:click={() => (noteColor = "#fdcfe8")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-11" title="Marrone" on:click={() => (noteColor = "#e6c9a8")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-        <li class="note__color color color-12" title="Grigio" on:click={() => (noteColor = "#e8eaed")}>
-          <img src="assets/icons/icon-checked.svg" alt="icon" />
-        </li>
-      </ul>
+    <div class="note__btn-4" on:pointerenter={() => (colorPicker = true)} on:pointerleave={() => (colorPicker = false)}>
+      <NoteColorPicker {noteColor} isVisible={colorPicker} on:colorChange={(event) => handleChangeColor(event)} />
       <Btn iconName="palette" btnXSmall={true} enabled={true} />
     </div>
     <div class="note__btn-5">
@@ -109,21 +74,16 @@
       <Btn iconName="archive" btnXSmall={true} />
     </div>
     <div class="note__btn-7">
-      <Btn iconName="dots" btnXSmall={true} enabled={true} on:click={() => (showMenu = true)} />
-      <ul class="note__menu">
-        <li class="note__menu-item">
-          <span>Elimina nota</span>
-        </li>
-        <li class="note__menu-item">
-          <span>Elimina nota</span>
-        </li>
-        <li class="note__menu-item">
-          <span>Elimina nota</span>
-        </li>
-        <li class="note__menu-item">
-          <span>Elimina nota</span>
-        </li>
-        <li class="note__menu-item">
+      <Btn
+        iconName="dots"
+        btnXSmall={true}
+        enabled={true}
+        on:click={() => {
+          showMenu = !showMenu;
+        }}
+      />
+      <ul class="note__menu {showMenu ? 'visible' : ''}">
+        <li class="note__menu-item" on:click={handleDeletion}>
           <span>Elimina nota</span>
         </li>
       </ul>
@@ -194,105 +154,33 @@
       position: relative;
     }
 
-    &__colors-list {
-      background-color: #fff;
-      border-radius: 2px;
-      box-shadow: 0 1px 1rem 1px rgba(0, 0, 0, 0.1);
-      padding: 1rem;
-
-      position: absolute;
-
-      z-index: 99999;
-      top: -12.4rem;
-
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.6rem;
-
-      opacity: 0;
-      visibility: hidden;
-
-      transition: all 200ms ease-in;
-    }
-
-    &__color {
-      height: 3rem;
-      width: 3rem;
-      border-radius: 50%;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      img {
-        opacity: 50%;
-        display: none;
-      }
-
-      &.color {
-        box-shadow: 0 0 0 1px #fff inset;
-
-        &-1 {
-          background-color: #fff;
-          border: 2px solid var(--color-gray-light-2);
-        }
-        &-2 {
-          background-color: #f28b82;
-        }
-        &-3 {
-          background-color: #fbbc04;
-        }
-        &-4 {
-          background-color: #fff475;
-        }
-        &-5 {
-          background-color: #ccff90;
-        }
-        &-6 {
-          background-color: #a7ffeb;
-        }
-        &-7 {
-          background-color: #cbf0f8;
-        }
-        &-8 {
-          background-color: #aecbfa;
-        }
-        &-9 {
-          background-color: #d7aefb;
-        }
-        &-10 {
-          background-color: #fdcfe8;
-        }
-        &-11 {
-          background-color: #e6c9a8;
-        }
-        &-12 {
-          background-color: #e8eaed;
-        }
-      }
-
-      &:hover {
-        border: 2px solid #000;
-      }
-    }
-
     &__menu {
       width: max-content;
 
       list-style: none;
 
       background-color: #fff;
+      border-radius: 2px;
+      box-shadow: 0 1px 1rem 1px rgba(0, 0, 0, 0.1);
 
       position: absolute;
       z-index: 9999;
 
+      opacity: 0%;
+      visibility: hidden;
+
+      transition: all 200ms ease-in;
       &-item {
-        font-size: 1.2rem;
+        font-family: "Roboto";
+        font-size: 1.4rem;
         color: var(--color-gray-dark-2);
         text-align: left;
 
-        padding: 0 2.4rem;
+        padding: 0.8rem;
+        padding-left: 1rem;
+        padding-right: 2.4rem;
+
+        z-index: 9999;
 
         &:first-child {
           margin-top: 0.4rem;
@@ -368,6 +256,12 @@
   .hovered {
     box-shadow: 0 5px 2rem 2px rgba(0, 0, 0, 0.1);
     transform: translateY(-4px);
+  }
+
+  // Color selected
+  .color--selected img {
+    opacity: 50%;
+    visibility: visible;
   }
 
   // Menus visibility

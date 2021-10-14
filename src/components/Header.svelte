@@ -13,7 +13,7 @@
 
 <header class="header">
   <div class="header__sidenav">
-    <Btn class="header__menu" iconName="menu" on:click={() => console.log("TODO")} />
+    <Btn class="header__menu" iconName="menu" enabled={true} on:click={() => console.log("TODO")} />
     <div class="header__position">
       <img class="header__logo" src="assets/images/keep-logo.png" alt="Keep logo" />
       <p class="header__text">Keep</p>

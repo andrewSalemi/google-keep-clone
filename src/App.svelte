@@ -17,6 +17,8 @@
     const start = noteIdx;
     currentlyDragged = noteIdx;
     event.dataTransfer.setData("text/plain", start); // Storing note idx for next the next event
+    let dragImage = new Image();
+    event.dataTransfer.setDragImage(dragImage, 40, 40);
     console.log("Start drag");
   };
 
@@ -60,6 +62,14 @@
     const searchValue = event.detail.searchValue;
     console.log(searchValue);
   };
+
+  // Delete
+  let handleDelete = (noteIdx) => {
+    notes.update((oldNotes) => {
+      oldNotes.splice(noteIdx, 1);
+      return [...oldNotes];
+    });
+  };
 </script>
 
 <div class="header"><Header /></div>
@@ -83,6 +93,7 @@
         <Note
           title={note.noteTitle}
           content={note.noteContent}
+          noteColor={note.noteColor}
           dragged={currentlyDragged === idx}
           hovered={currentlyHovered === idx}
           on:selection={(event) => handleSelection(event, idx)}
@@ -91,6 +102,7 @@
           }}
           on:drop={(event) => handleDrop(event, idx)}
           on:dragenter={() => (currentlyHovered = idx)}
+          on:delete={() => handleDelete(idx)}
         />
       </div>
     {/each}

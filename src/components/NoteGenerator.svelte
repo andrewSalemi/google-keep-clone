@@ -2,10 +2,13 @@
   import Btn from "./Btn.svelte";
   import autosize from "autosize";
   import { notes } from "../store/notes";
+  import NoteColorPicker from "./NoteColorPicker.svelte";
 
   let noteTitle = "";
   let noteContent = "";
+  let noteColor = "#fff";
   let closed = true;
+  let colorPicker = false;
 
   function clickOutside(element, callbackFunction) {
     function onClick(event) {
@@ -28,7 +31,7 @@
 
   let generateNote = (event) => {
     if (event.key === "Enter") {
-      let note = { noteTitle, noteContent };
+      let note = { noteTitle, noteContent, noteColor };
       notes.update((currentNotes) => {
         return [note, ...currentNotes];
       });
@@ -39,6 +42,10 @@
       console.log(event);
     }
   };
+
+  let handleChangeColor = (event) => {
+    noteColor = event.detail.selectedColor;
+  };
 </script>
 
 <section
@@ -46,6 +53,7 @@
   class:note-generator--closed={closed === true}
   use:clickOutside={() => (closed = true)}
   on:keydown={generateNote}
+  style="background-color: {noteColor}; border-color: {noteColor};"
 >
   <input
     class="note-generator__title"
@@ -74,7 +82,12 @@
       <div class="note-generator__btn-3">
         <Btn iconName="userPlus" btnXSmall={true} />
       </div>
-      <div class="note-generator__btn-4">
+      <div
+        class="note-generator__btn-4"
+        on:pointerenter={() => (colorPicker = true)}
+        on:pointerleave={() => (colorPicker = false)}
+      >
+        <NoteColorPicker {noteColor} isVisible={colorPicker} on:colorChange={(event) => handleChangeColor(event)} />
         <Btn iconName="palette" btnXSmall={true} enabled={true} />
       </div>
       <div class="note-generator__btn-5">
@@ -126,6 +139,8 @@
     grid-template-columns: 1fr 2.3rem;
     row-gap: 1rem;
     padding-top: 0.4rem;
+
+    transition: all 200ms ease-in;
 
     &--closed {
       padding: 0;
@@ -180,6 +195,10 @@
       padding-right: 2rem;
     }
 
+    &__btn-4 {
+      position: relative;
+    }
+
     &__btn-9 {
       transform: rotateY(180deg);
     }
@@ -207,7 +226,7 @@
       margin-right: 1.5rem;
 
       &:hover {
-        background-color: var(--sidenav-item-hover);
+        background-color: rgba(0, 0, 0, 0.05);
       }
     }
 
