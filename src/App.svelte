@@ -67,7 +67,7 @@
 <div class="sidenav"><SideNav /></div>
 
 <main class="main">
-  <div on:do class="main__generator">
+  <div class="main__generator">
     <NoteGenerator />
   </div>
   <div
