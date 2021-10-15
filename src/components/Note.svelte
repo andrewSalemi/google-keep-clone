@@ -3,6 +3,7 @@
   import NoteColorPicker from "./NoteColorPicker.svelte";
   import { createEventDispatcher } from "svelte";
 
+  export let draggable = true;
   export let content = "";
   export let title = "";
   export let noteColor = "#fff";
@@ -38,7 +39,7 @@
   class:note--selected={selected}
   class:hovered
   class:dragged
-  draggable="true"
+  {draggable}
   on:dragstart
   on:dragenter
   on:drop

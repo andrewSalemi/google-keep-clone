@@ -4,6 +4,9 @@
   import { notes } from "../store/notes";
   import { searchNotes } from "../store/searchNotes";
   import NoteColorPicker from "./NoteColorPicker.svelte";
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   let noteTitle = "";
   let noteContent = "";
@@ -32,18 +35,11 @@
 
   let generateNote = (event) => {
     if (event.key === "Enter") {
-      let note = { noteTitle, noteContent, noteColor };
-      notes.update((currentNotes) => {
-        return [note, ...currentNotes];
-      });
-      searchNotes.update((currentSearch) => {
-        return [note, ...currentSearch];
-      });
+      dispatch("generateNote", { noteTitle, noteContent, noteColor });
       noteTitle = "";
       noteContent = "";
       event.target.blur();
       closed = true;
-      console.log(event);
     }
   };
 

@@ -11,6 +11,7 @@
 
   --color-gray-dark-1: rgb(95, 99, 104);
   --color-gray-dark-2: rgb(32, 33, 36);
+  --color-gray-dark-3: rgb(60, 64, 67);
 
   --background-dark: rgb(241, 243, 244);
 
@@ -30,4 +31,8 @@ html {
   font-size: 62.5%;
 
   box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
 }

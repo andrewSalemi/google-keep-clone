@@ -3,6 +3,7 @@
   import SideNav from "./components/SideNav.svelte";
   import Note from "./components/Note.svelte";
   import NoteGenerator from "./components/NoteGenerator.svelte";
+  import SelectionHeader from "./components/SelectionHeader.svelte";
   import { notes } from "./store/notes";
   import { selectedNotes } from "./store/selectedNotes";
   import { searchNotes } from "./store/searchNotes";
@@ -18,8 +19,26 @@
     });
   });
 
+  $: notesDraggable = $searchNotes.length === $notes.length;
+
+  // Note Generation
+  const handleNoteGeneration = (event) => {
+    const newNote = {
+      noteTitle: event.detail.noteTitle,
+      noteContent: event.detail.noteContent,
+      noteColor: event.detail.noteColor,
+    };
+    console.log(event.detail);
+    notes.update((currentNotes) => {
+      return [newNote, ...currentNotes];
+    });
+    searchNotes.update((currentSearch) => {
+      return [newNote, ...currentSearch];
+    });
+  };
+
   // Drag and Drop
-  let startDrag = (event, noteIdx) => {
+  const startDrag = (event, noteIdx) => {
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.dropEffect = "move";
     const start = noteIdx;
@@ -30,7 +49,7 @@
     console.log("Start drag");
   };
 
-  let handleDrop = (event, noteHoverIdx) => {
+  const handleDrop = (event, noteHoverIdx) => {
     currentlyDragged = -1;
     currentlyHovered = -1;
     console.log("dropped");
@@ -54,8 +73,7 @@
   };
 
   // Selection
-  let handleSelection = (event, idx) => {
-    console.log(event.detail.selectionStatus);
+  const handleSelection = (event, idx) => {
     if (!event.detail.selectionStatus) {
       selectedNotes.update((oldSelection) => {
         return oldSelection.filter((selection) => selection !== $notes[idx]);
@@ -65,11 +83,23 @@
         return [...oldSelection, $notes[idx]];
       });
     }
-    console.log($selectedNotes);
+  };
+
+  const handleSelectionColorChange = (color) => {
+    notes.update((oldNotes) => {
+      let toUpdate = $selectedNotes.map((selection) => {
+        return oldNotes.indexOf(selection);
+      });
+      toUpdate.forEach((idx) => (oldNotes[idx].noteColor = color));
+      return oldNotes;
+    });
+    searchNotes.update((oldNotes) => {
+      return [...$notes];
+    });
   };
 
   // Searching
-  let heandleSearch = (event) => {
+  const heandleSearch = (event) => {
     const searchValue = event.detail.searchValue.toLowerCase();
     searchNotes.update((oldNotes) => {
       if (searchValue.length === 0) {
@@ -84,7 +114,7 @@
   };
 
   // Delete
-  let handleDelete = (noteIdx, content) => {
+  const handleDelete = (noteIdx, content) => {
     if ($searchNotes.length === $notes.length) {
       notes.update((oldNotes) => {
         oldNotes.splice(noteIdx, 1);
@@ -102,15 +132,46 @@
       });
     }
   };
+
+  const handleSelectionDeletion = () => {
+    notes.update((oldNotes) => {
+      return oldNotes.filter(
+        (note) =>
+          !$selectedNotes.some(
+            (toDelete) =>
+              toDelete.noteTitle === note.noteTitle &&
+              toDelete.noteContent === note.noteContent &&
+              toDelete.noteColor === note.noteColor
+          )
+      );
+    });
+
+    selectedNotes.update(() => {
+      return [];
+    });
+
+    searchNotes.update((oldNotes) => {
+      return [...$notes];
+    });
+  };
 </script>
 
-<div class="header"><Header on:search={(event) => heandleSearch(event)} /></div>
+<div class="header">
+  {#if $selectedNotes.length === 0}
+    <Header on:search={(event) => heandleSearch(event)} />
+  {:else}
+    <SelectionHeader
+      on:selectionDeletion={handleSelectionDeletion}
+      on:selectionColorChange={(event) => handleSelectionColorChange(event.detail.selectedColor)}
+    />
+  {/if}
+</div>
 
 <div class="sidenav"><SideNav /></div>
 
 <main class="main">
   <div class="main__generator">
-    <NoteGenerator />
+    <NoteGenerator on:generateNote={handleNoteGeneration} />
   </div>
   <div
     class="main__notes"
@@ -128,6 +189,7 @@
           noteColor={note.noteColor}
           dragged={currentlyDragged === idx}
           hovered={currentlyHovered === idx}
+          draggable={notesDraggable}
           on:selection={(event) => handleSelection(event, idx)}
           on:dragstart={(event) => {
             startDrag(event, idx);
@@ -143,11 +205,9 @@
 
 <style lang="scss">
   .header {
+    max-height: 4.8rem;
     width: 100vw;
     background-color: #fff;
-
-    border-bottom: 1px solid var(--color-gray-light-2);
-    padding: 0.8rem 1.2rem;
 
     position: fixed;
     top: 0;
@@ -178,7 +238,7 @@
     &__notes {
       align-self: center;
 
-      margin: 2.8rem 2.8rem 0 28rem;
+      margin: 2.8rem 2.8rem 0 30rem;
 
       display: flex;
       flex-wrap: wrap;

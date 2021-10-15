@@ -1,6 +1,7 @@
 <script>
   import Btn from "./Btn.svelte";
   import { createEventDispatcher } from "svelte";
+
   let searchInput;
   let searchValue = "";
 
@@ -39,6 +40,7 @@
         on:click={() => {
           searchValue = "";
           searchInput.focus();
+          dispatch("search", { searchValue });
         }}
       />
     {/if}
@@ -58,8 +60,11 @@
 
 <style lang="scss">
   .header {
-    height: 4.8rem;
+    height: 100%;
     width: 100%;
+
+    border-bottom: 1px solid var(--color-gray-light-2);
+    padding: 0.8rem 1.2rem;
 
     display: flex;
     align-items: center;

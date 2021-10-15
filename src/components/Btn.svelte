@@ -1,4 +1,6 @@
 <script>
+  export let btnRef = undefined;
+  export let iconRef = undefined;
   export let iconName = undefined;
   export let btnSmall = false;
   export let btnXSmall = false;
@@ -6,11 +8,12 @@
 </script>
 
 <button
+  {btnRef}
   disabled={!enabled}
   class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''} {enabled ? '' : 'btn--disabled'}"
   on:click
 >
-  <img class="btn__icon" src="assets/icons/icon-{iconName}.svg" alt="Button icon" />
+  <img {iconRef} class="btn__icon" src="assets/icons/icon-{iconName}.svg" alt="Button icon" />
 </button>
 
 <style lang="scss">
