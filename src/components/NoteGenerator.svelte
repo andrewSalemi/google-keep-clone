@@ -2,6 +2,7 @@
   import Btn from "./Btn.svelte";
   import autosize from "autosize";
   import { notes } from "../store/notes";
+  import { searchNotes } from "../store/searchNotes";
   import NoteColorPicker from "./NoteColorPicker.svelte";
 
   let noteTitle = "";
@@ -34,6 +35,9 @@
       let note = { noteTitle, noteContent, noteColor };
       notes.update((currentNotes) => {
         return [note, ...currentNotes];
+      });
+      searchNotes.update((currentSearch) => {
+        return [note, ...currentSearch];
       });
       noteTitle = "";
       noteContent = "";

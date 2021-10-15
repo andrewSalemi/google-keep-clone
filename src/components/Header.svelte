@@ -34,6 +34,7 @@
       <Btn
         class="btn--clear"
         iconName="close"
+        enabled={true}
         btnSmall={true}
         on:click={() => {
           searchValue = "";

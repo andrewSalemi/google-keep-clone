@@ -5,10 +5,18 @@
   import NoteGenerator from "./components/NoteGenerator.svelte";
   import { notes } from "./store/notes";
   import { selectedNotes } from "./store/selectedNotes";
+  import { searchNotes } from "./store/searchNotes";
   import { flip } from "svelte/animate";
+  import { onMount } from "svelte";
 
   let currentlyDragged = -1;
   let currentlyHovered = -1;
+
+  onMount(() => {
+    searchNotes.update((oldSearch) => {
+      return [...$notes];
+    });
+  });
 
   // Drag and Drop
   let startDrag = (event, noteIdx) => {
@@ -40,6 +48,9 @@
       }
       return oldNotes;
     });
+    searchNotes.update((oldNotes) => {
+      return [...$notes];
+    });
   };
 
   // Selection
@@ -59,20 +70,41 @@
 
   // Searching
   let heandleSearch = (event) => {
-    const searchValue = event.detail.searchValue;
-    console.log(searchValue);
+    const searchValue = event.detail.searchValue.toLowerCase();
+    searchNotes.update((oldNotes) => {
+      if (searchValue.length === 0) {
+        return [...$notes];
+      } else {
+        return oldNotes.filter(
+          (note) =>
+            note.noteContent.toLowerCase().includes(searchValue) || note.noteTitle.toLowerCase().includes(searchValue)
+        );
+      }
+    });
   };
 
   // Delete
-  let handleDelete = (noteIdx) => {
-    notes.update((oldNotes) => {
-      oldNotes.splice(noteIdx, 1);
-      return [...oldNotes];
-    });
+  let handleDelete = (noteIdx, content) => {
+    if ($searchNotes.length === $notes.length) {
+      notes.update((oldNotes) => {
+        oldNotes.splice(noteIdx, 1);
+        return [...oldNotes];
+      });
+      searchNotes.update((oldNotes) => {
+        return [...$notes];
+      });
+    } else {
+      notes.update((oldNotes) => {
+        return oldNotes.filter((note) => note.noteContent !== content);
+      });
+      searchNotes.update((oldNotes) => {
+        return [...$notes];
+      });
+    }
   };
 </script>
 
-<div class="header"><Header /></div>
+<div class="header"><Header on:search={(event) => heandleSearch(event)} /></div>
 
 <div class="sidenav"><SideNav /></div>
 
@@ -87,7 +119,7 @@
       currentlyHovered = -1;
     }}
   >
-    {#each $notes as note, idx (note)}
+    {#each $searchNotes as note, idx (note)}
       <div class="main__note" animate:flip={{ duration: 200 }}>
         <!-- ondragover="return false stop the default behaviour" -->
         <Note
@@ -102,7 +134,7 @@
           }}
           on:drop={(event) => handleDrop(event, idx)}
           on:dragenter={() => (currentlyHovered = idx)}
-          on:delete={() => handleDelete(idx)}
+          on:delete={() => handleDelete(idx, note.noteContent)}
         />
       </div>
     {/each}
