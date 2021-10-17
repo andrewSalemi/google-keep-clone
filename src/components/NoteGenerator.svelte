@@ -1,8 +1,6 @@
 <script>
   import Btn from "./Btn.svelte";
   import autosize from "autosize";
-  import { notes } from "../store/notes";
-  import { searchNotes } from "../store/searchNotes";
   import NoteColorPicker from "./NoteColorPicker.svelte";
   import { createEventDispatcher } from "svelte";
 
@@ -14,7 +12,7 @@
   let closed = true;
   let colorPicker = false;
 
-  function clickOutside(element, callbackFunction) {
+  const clickOutside = (element, callbackFunction) => {
     function onClick(event) {
       if (!element.contains(event.target)) {
         callbackFunction();
@@ -31,9 +29,9 @@
         document.body.removeEventListener("click", onClick);
       },
     };
-  }
+  };
 
-  let generateNote = (event) => {
+  const generateNote = (event) => {
     if (event.key === "Enter") {
       dispatch("generateNote", { noteTitle, noteContent, noteColor });
       noteTitle = "";
@@ -43,7 +41,7 @@
     }
   };
 
-  let handleChangeColor = (event) => {
+  const handleChangeColor = (event) => {
     noteColor = event.detail.selectedColor;
   };
 </script>

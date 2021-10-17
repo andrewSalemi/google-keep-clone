@@ -9,18 +9,22 @@
   let colorPicker = false;
   let showMenu = false;
 
-  let handleSelectionColorChange = (event) => {
+  const handleSelectionColorChange = (event) => {
     dispatch("selectionColorChange", { selectedColor: event.detail.selectedColor });
   };
 
-  let handleSelectionDeletion = () => {
+  const handleSelectionDeletion = () => {
     dispatch("selectionDeletion");
+  };
+
+  const handleUndoSelection = () => {
+    dispatch("undoSelection");
   };
 </script>
 
 <header class="header-selection">
   <div class="header-selection__btn-close">
-    <Btn enabled={true} iconName={"close"} />
+    <Btn enabled={true} iconName={"close"} on:click={handleUndoSelection} />
   </div>
   <span class="header-selection__text">
     {$selectedNotes.length}&nbsp;selezionat{$selectedNotes.length > 1 ? "i" : "o"}
@@ -143,7 +147,7 @@
     }
 
     :global([iconRef="opacity-1"]) {
-      filter: opacity(100%);
+      filter: opacity(100%) !important;
     }
   }
 

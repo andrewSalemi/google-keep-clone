@@ -2,6 +2,7 @@
   import Header from "./components/Header.svelte";
   import SideNav from "./components/SideNav.svelte";
   import Note from "./components/Note.svelte";
+  import NoteFull from "./components/NoteFull.svelte";
   import NoteGenerator from "./components/NoteGenerator.svelte";
   import SelectionHeader from "./components/SelectionHeader.svelte";
   import { notes } from "./store/notes";
@@ -12,6 +13,7 @@
 
   let currentlyDragged = -1;
   let currentlyHovered = -1;
+  let currentlyOpen = -1;
 
   onMount(() => {
     searchNotes.update((oldSearch) => {
@@ -35,6 +37,18 @@
     searchNotes.update((currentSearch) => {
       return [newNote, ...currentSearch];
     });
+  };
+
+  // Note modify
+  const handleNoteOpen = (openNoteIdx) => {
+    currentlyOpen = openNoteIdx;
+    console.log(currentlyOpen);
+  };
+
+  const closeNote = (event) => {
+    if (event.target.tagName === "DIV") {
+      currentlyOpen = -1;
+    }
   };
 
   // Drag and Drop
@@ -163,6 +177,11 @@
     <SelectionHeader
       on:selectionDeletion={handleSelectionDeletion}
       on:selectionColorChange={(event) => handleSelectionColorChange(event.detail.selectedColor)}
+      on:undoSelection={() => {
+        selectedNotes.update((oldNotes) => {
+          return [];
+        });
+      }}
     />
   {/if}
 </div>
@@ -181,7 +200,7 @@
     }}
   >
     {#each $searchNotes as note, idx (note)}
-      <div class="main__note" animate:flip={{ duration: 200 }}>
+      <div class="main__note" class:opened={idx === currentlyOpen} animate:flip={{ duration: 200 }}>
         <!-- ondragover="return false stop the default behaviour" -->
         <Note
           title={note.noteTitle}
@@ -197,11 +216,22 @@
           on:drop={(event) => handleDrop(event, idx)}
           on:dragenter={() => (currentlyHovered = idx)}
           on:delete={() => handleDelete(idx, note.noteContent)}
+          on:openNote={() => handleNoteOpen(idx)}
         />
       </div>
     {/each}
   </div>
 </main>
+
+{#if currentlyOpen !== -1}
+  <div class="note-full" class:note-full--show={currentlyOpen !== -1} on:click={(event) => closeNote(event)}>
+    <NoteFull
+      noteTitle={$notes[currentlyOpen].noteTitle}
+      noteContent={$notes[currentlyOpen].noteContent}
+      noteColor={$notes[currentlyOpen].noteColor}
+    />
+  </div>
+{/if}
 
 <style lang="scss">
   .header {
@@ -223,9 +253,11 @@
 
   .main {
     width: 100%;
-    height: calc(100% - 6.4rem);
+    height: 100%;
 
     margin: 6.4rem auto 0 auto;
+
+    position: relative;
 
     display: flex;
     flex-direction: column;
@@ -245,5 +277,32 @@
       column-gap: 2.4rem;
       row-gap: 1.8rem;
     }
+  }
+
+  .opened {
+    position: absolute;
+    top: 30rem;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+  }
+
+  .note-full {
+    width: 100%;
+    height: 120vh;
+
+    background-color: rgba(0, 0, 0, 0.3);
+
+    position: absolute;
+    top: 40%;
+    left: 50%;
+
+    z-index: 999999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transform: translate(-50%, -50%);
   }
 </style>

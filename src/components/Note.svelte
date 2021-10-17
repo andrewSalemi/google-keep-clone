@@ -12,24 +12,31 @@
   export let dragged = false;
 
   let selected = false;
+  let open = true;
   let showMenu = false;
   let colorPicker = false;
 
   const dispatch = createEventDispatcher();
 
-  let handleChangeColor = (event) => {
+  const handleChangeColor = (event) => {
     noteColor = event.detail.selectedColor;
   };
 
-  let handleSelection = () => {
+  const handleSelection = () => {
     selected = !selected;
     dispatch("selection", {
       selectionStatus: selected,
     });
   };
 
-  let handleDeletion = () => {
+  const handleDeletion = () => {
     dispatch("delete");
+  };
+
+  const heandleOpenNote = (event) => {
+    if (event.target.tagName !== "LI") {
+      dispatch("openNote");
+    }
   };
 </script>
 
@@ -44,6 +51,7 @@
   on:dragenter
   on:drop
   on:pointerleave={() => (showMenu = false)}
+  on:click={(event) => heandleOpenNote(event)}
   ondragover="return false"
 >
   <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={handleSelection} />
@@ -257,12 +265,6 @@
   .hovered {
     box-shadow: 0 5px 2rem 2px rgba(0, 0, 0, 0.1);
     transform: translateY(-4px);
-  }
-
-  // Color selected
-  .color--selected img {
-    opacity: 50%;
-    visibility: visible;
   }
 
   // Menus visibility

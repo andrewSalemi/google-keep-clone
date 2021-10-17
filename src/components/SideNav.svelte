@@ -32,7 +32,7 @@
 
 <style lang="scss">
   .sidenav {
-    height: calc(100vh - 6.4rem);
+    height: 100%;
     width: fit-content;
 
     padding-top: 0.8rem;

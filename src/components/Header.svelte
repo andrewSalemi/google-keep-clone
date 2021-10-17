@@ -7,7 +7,7 @@
 
   const dispatch = createEventDispatcher();
 
-  let handleSearch = (event) => {
+  const handleSearch = (event) => {
     dispatch("search", { searchValue: searchValue });
   };
 </script>

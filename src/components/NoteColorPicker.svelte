@@ -6,7 +6,7 @@
   export let noteColor = "#fff";
   export let isVisible = false;
 
-  let handleChangeColor = (selectedColor) => {
+  const handleChangeColor = (selectedColor) => {
     noteColor = selectedColor;
     dispatch("colorChange", { selectedColor });
   };
