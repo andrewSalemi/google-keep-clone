@@ -8,13 +8,14 @@
   const dispatch = createEventDispatcher();
 
   const handleSearch = (event) => {
+    console.log(event);
     dispatch("search", { searchValue: searchValue });
   };
 </script>
 
 <header class="header">
   <div class="header__sidenav">
-    <Btn class="header__menu" iconName="menu" enabled={true} on:click={() => console.log("TODO")} />
+    <Btn iconName="menu" enabled={true} on:click={() => console.log("TODO")} />
     <div class="header__position">
       <img class="header__logo" src="assets/images/keep-logo.png" alt="Keep logo" />
       <p class="header__text">Keep</p>
@@ -22,7 +23,7 @@
   </div>
 
   <div class="header__searchbar">
-    <Btn class="btn--search" iconName="search" btnSmall={true} />
+    <Btn iconName="search" btnSmall={true} />
     <input
       type="text"
       class="header__input"
@@ -30,10 +31,10 @@
       bind:this={searchInput}
       bind:value={searchValue}
       on:input={handleSearch}
+      on:change={handleSearch}
     />
     {#if searchValue.length > 0}
       <Btn
-        class="btn--clear"
         iconName="close"
         enabled={true}
         btnSmall={true}
@@ -47,13 +48,13 @@
   </div>
 
   <div class="header__utility-btn">
-    <Btn class="btn--refresh" iconName="refresh" />
-    <Btn class="btn--display" iconName="agenda" />
-    <Btn class="btn--settings" iconName="settings" />
+    <Btn iconName="refresh" />
+    <Btn iconName="agenda" />
+    <Btn iconName="settings" />
   </div>
 
   <div class="header__user-panel">
-    <Btn class="btn--apps" iconName="app" />
+    <Btn iconName="app" />
     <img class="header__profile" src="assets/images/pro-pic.jpg" alt="User profile" />
   </div>
 </header>

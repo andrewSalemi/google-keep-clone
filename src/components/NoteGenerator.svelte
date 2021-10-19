@@ -6,6 +6,7 @@
   import { createEventDispatcher } from "svelte";
   import { flip } from "svelte/animate";
   import { fade, fly } from "svelte/transition";
+  import Note from "./Note.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -22,7 +23,7 @@
 
   let closed = true;
   let colorPicker = false;
-  let generatorMode = "todo";
+  let generatorMode = "note";
 
   const clickOutside = (node) => {
     const handleClick = (event) => {
@@ -42,23 +43,20 @@
 
   const generateNote = (event) => {
     if (event.key === "Enter") {
+      console.log("generator Mode:" + generatorMode);
+
       if (noteTitle === "") {
         noteTitle = "Nessun titolo";
       }
-      if (generatorMode === "note") {
+      if (noteContent !== "" || noteTodos.length > 0) {
         console.log(noteTitle, noteContent, noteTodos, noteColor);
-        noteTodos = [];
         dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
-        noteTitle = "";
         noteContent = "";
-        event.target.blur();
-      } else {
-        noteContent = "";
-        dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
-        noteTitle = "";
         noteTodos = [];
         event.target.blur();
       }
+      noteTitle = "";
+      generatorMode = "note";
       closed = true;
     }
   };
@@ -69,28 +67,17 @@
     titleInput.focus();
   };
 
-  const handleGeneratorMode = () => {
-    if (generatorMode === "todo" && closed === true) {
-      noteTodos = [];
-      generatorMode = "note";
-    }
-    closed = false;
-  };
-
-  const handleClose = () => {
+  const handleClose = (event) => {
     if (noteTitle === "") {
       noteTitle = "Nessun titolo";
     }
-    if (noteContent !== "" && generatorMode === "note") {
-      noteTodos = [];
+    if (noteContent !== "" || noteTodos.length > 0) {
       dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
       noteContent = "";
-    } else if (noteTodos.length > 0 && generatorMode === "todo") {
-      noteContent = "";
-      dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
       noteTodos = [];
     }
     noteTitle = "";
+    generatorMode = "note";
     closed = true;
   };
 
@@ -141,7 +128,7 @@
     bind:this={titleInput}
     bind:value={noteTitle}
     placeholder={closed ? "Scrivi una nota..." : "Titolo"}
-    on:click={handleGeneratorMode}
+    on:click={() => (closed = false)}
   />
   {#if !closed}
     {#if generatorMode === "note"}
@@ -159,6 +146,7 @@
         {#each noteTodos as todoItem, idx (todoItem)}
           <div bind:this={lastCreated} class="animation" animate:flip in:fade|local out:fly|local={{ x: 100 }}>
             <TodoItem
+              autofocus={true}
               status={todoItem.status}
               content={todoItem.content}
               on:saveTodoContent={(event) => handleSaveTodoContent(event, idx)}

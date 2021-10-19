@@ -7,9 +7,12 @@
   let ref = undefined;
   export let status = false;
   export let content = "";
+  export let autofocus = false;
 
   onMount(() => {
-    ref.focus();
+    if (autofocus) {
+      ref.focus();
+    }
   });
 
   const handleDeleteItem = () => {

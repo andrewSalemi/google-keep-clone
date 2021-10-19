@@ -10,7 +10,10 @@
 <button
   {btnRef}
   disabled={!enabled}
-  class="btn {btnSmall ? 'btn--small' : ''} {btnXSmall ? 'btn--xsmall' : ''} {enabled ? '' : 'btn--disabled'}"
+  class="btn"
+  class:btn--small={btnSmall === true}
+  class:btn--xsmall={btnXSmall === true}
+  class:btn--disabled={enabled !== true}
   on:click
 >
   <img {iconRef} class="btn__icon" src="assets/icons/icon-{iconName}.svg" alt="Button icon" />

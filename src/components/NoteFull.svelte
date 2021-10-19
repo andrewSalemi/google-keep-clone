@@ -9,12 +9,12 @@
   export let noteIdx;
   export let noteTitle = "";
   export let noteContent = "";
-  export let noteColor = "#fff";
+  export let color = "#fff";
 
   let colorPicker = false;
 
   const handleChangeColor = (event) => {
-    noteColor = event.detail.selectedColor;
+    color = event.detail.selectedColor;
   };
 
   const noteSaveModify = () => {
@@ -22,12 +22,12 @@
       noteIdx: noteIdx,
       newTitle: noteTitle,
       newContent: noteContent,
-      newColor: noteColor,
+      newColor: color,
     });
   };
 </script>
 
-<section class="note-full" style="background-color: {noteColor}; border-color: {noteColor};">
+<section class="note-full" style="background-color: {color}; border-color: {color};">
   <input class="note-full__title" type="text" bind:value={noteTitle} />
   <textarea
     on:input={(event) => autosize(event.target)}
@@ -50,7 +50,7 @@
       on:pointerenter={() => (colorPicker = true)}
       on:pointerleave={() => (colorPicker = false)}
     >
-      <NoteColorPicker {noteColor} isVisible={colorPicker} on:colorChange={(event) => handleChangeColor(event)} />
+      <NoteColorPicker {color} isVisible={colorPicker} on:colorChange={(event) => handleChangeColor(event)} />
       <Btn iconName="palette" btnXSmall={true} enabled={true} />
     </div>
     <div class="note-full__btn-5">

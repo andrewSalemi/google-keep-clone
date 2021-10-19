@@ -7,7 +7,7 @@
   import SelectionHeader from "./components/SelectionHeader.svelte";
   import { notes } from "./store/notes";
   import { flip } from "svelte/animate";
-  import { scale } from "svelte/transition";
+  import { scale, fade } from "svelte/transition";
   import { cubicIn, cubicOut } from "svelte/easing";
   import { onMount } from "svelte";
 
@@ -26,8 +26,7 @@
 
   // Note Generation
   const handleNoteGeneration = (event) => {
-    console.log(event.detail);
-    let newNote = {
+    const newNote = {
       noteTitle: event.detail.noteTitle,
       noteContent: event.detail.noteContent,
       noteTodos: event.detail.noteTodos,
@@ -39,13 +38,12 @@
       return currentNotes;
     });
     filterNotes = [...$notes];
-    console.log($notes);
   };
 
   // Note modify
   const handleNoteOpen = (openNoteIdx) => {
     currentlyOpen = openNoteIdx;
-    console.log(currentlyOpen);
+    console.log($notes[currentlyOpen]);
   };
 
   const closeNote = (event) => {
@@ -70,7 +68,42 @@
   const handleChangeColor = (event, noteIdx) => {
     notes.update((oldNotes) => {
       let toUpdate = oldNotes[noteIdx];
-      toUpdate.noteColor = event.detail.noteColor;
+      toUpdate.noteColor = event.detail.color;
+      return oldNotes;
+    });
+
+    filterNotes = [...$notes];
+  };
+
+  const handelTodoContentUpdate = (event, noteIdx) => {
+    notes.update((oldNotes) => {
+      let noteToUpdate = oldNotes[noteIdx];
+      let todoItemIdx = event.detail.itemIdx;
+      let todoItemNewContent = event.detail.content;
+      noteToUpdate.noteTodos[todoItemIdx].content = todoItemNewContent;
+      return oldNotes;
+    });
+
+    filterNotes = [...$notes];
+  };
+
+  const handelTodoStatusUpdate = (event, noteIdx) => {
+    notes.update((oldNotes) => {
+      let noteToUpdate = oldNotes[noteIdx];
+      let todoItemIdx = event.detail.itemIdx;
+      let todoItemNewStatus = event.detail.status;
+      noteToUpdate.noteTodos[todoItemIdx].status = todoItemNewStatus;
+      return oldNotes;
+    });
+
+    filterNotes = [...$notes];
+  };
+
+  const handleTodoItemDelete = (event, noteIdx) => {
+    notes.update((oldNotes) => {
+      let noteToUpdate = oldNotes[noteIdx];
+      let todoItemNewTodos = event.detail.todos;
+      noteToUpdate.noteTodos = todoItemNewTodos;
       return oldNotes;
     });
 
@@ -204,8 +237,14 @@
     }}
   >
     {#each filterNotes as note, idx (note)}
-      <div class="main__note" class:opened={idx === currentlyOpen} animate:flip={{ duration: 200 }}>
-        <!-- ondragover="return false stop the default behaviour" -->
+      <div
+        class="main__note"
+        class:opened={idx === currentlyOpen}
+        animate:flip={{ duration: 200 }}
+        in:scale|locale={{ duration: 100, start: 0 }}
+        out:scale|locale={{ duration: 100, start: 0 }}
+      >
+        {(console.log(note, idx), "")}
         <Note
           title={note.noteTitle}
           content={note.noteContent}
@@ -215,14 +254,15 @@
           hovered={currentlyHovered === idx}
           draggable={notesDraggable}
           on:selection={(event) => handleSelection(event, idx)}
-          on:dragstart={(event) => {
-            startDrag(event, idx);
-          }}
+          on:dragstart={(event) => startDrag(event, idx)}
           on:drop={(event) => handleDrop(event, idx)}
           on:dragenter={() => (currentlyHovered = idx)}
           on:delete={() => handleDelete(idx, note.noteContent)}
           on:openNote={() => handleNoteOpen(idx)}
           on:changeColor={(event) => handleChangeColor(event, idx)}
+          on:updateTodoContent={(event) => handelTodoContentUpdate(event, idx)}
+          on:updateTodoStatus={(event) => handelTodoStatusUpdate(event, idx)}
+          on:todoItemDelete={(event) => handleTodoItemDelete(event, idx)}
         />
       </div>
     {/each}
@@ -246,7 +286,7 @@
         noteIdx={currentlyOpen}
         noteTitle={$notes[currentlyOpen].noteTitle}
         noteContent={$notes[currentlyOpen].noteContent}
-        noteColor={$notes[currentlyOpen].noteColor}
+        color={$notes[currentlyOpen].noteColor}
       />
     </div>
   </div>
@@ -274,7 +314,7 @@
     width: 100%;
     height: 100%;
 
-    margin: 6.4rem auto 0 auto;
+    margin: 6.4rem auto 0 27.6rem;
 
     position: relative;
 
@@ -284,12 +324,14 @@
 
     &__generator {
       margin: 3.2rem auto 1.6rem auto;
+      align-self: center;
     }
 
     &__notes {
-      align-self: center;
+      width: 90%;
+      align-self: flex-start;
 
-      margin: 2.8rem 2.8rem 0 30rem;
+      margin: 1.2rem auto 0 1rem;
 
       display: flex;
       flex-wrap: wrap;

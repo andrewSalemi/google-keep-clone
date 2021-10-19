@@ -3,6 +3,8 @@
   import TodoItem from "./TodoItem.svelte";
   import NoteColorPicker from "./NoteColorPicker.svelte";
   import { createEventDispatcher } from "svelte";
+  import { flip } from "svelte/animate";
+  import { fade, fly } from "svelte/transition";
 
   export let draggable = true;
   export let content = "";
@@ -40,6 +42,26 @@
       dispatch("openNote");
     }
   };
+
+  const handleSaveTodoContent = (event, itemIdx) => {
+    let toUpdate = todos[itemIdx];
+    toUpdate.content = event.detail.content;
+    todos = todos;
+    dispatch("updateTodoContent", { itemIdx, content: event.detail.content });
+  };
+
+  const handleSaveTodoStatus = (event, itemIdx) => {
+    let toUpdate = todos[itemIdx];
+    toUpdate.status = event.detail.status;
+    todos = todos;
+    dispatch("updateTodoStatus", { itemIdx, status: event.detail.status });
+  };
+
+  const handleItemDelete = (event, itemIdx) => {
+    todos.splice(itemIdx, 1);
+    todos = todos;
+    dispatch("todoItemDelete", { todos });
+  };
 </script>
 
 <article
@@ -67,8 +89,14 @@
   <p id="content" class="note__content">
     {#if todos.length > 0}
       {#each todos as todoItem, idx (todoItem)}
-        <div class="animation">
-          <TodoItem status={todoItem.status} content={todoItem.content} />
+        <div class="animation" animate:flip in:fade|local out:fly|local={{ x: 50 }}>
+          <TodoItem
+            status={todoItem.status}
+            content={todoItem.content}
+            on:saveTodoContent={(event) => handleSaveTodoContent(event, idx)}
+            on:saveTodoStatus={(event) => handleSaveTodoStatus(event, idx)}
+            on:deleteItem={(event) => handleItemDelete(event, idx)}
+          />
         </div>
       {/each}
     {:else}
@@ -282,5 +310,17 @@
   .visible {
     opacity: 100%;
     visibility: visible;
+  }
+
+  .animation:not(:nth-last-child(1)) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .animation:first-child {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .animation:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
 </style>
