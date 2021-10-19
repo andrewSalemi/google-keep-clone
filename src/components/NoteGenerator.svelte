@@ -1,75 +1,184 @@
 <script>
   import Btn from "./Btn.svelte";
+  import TodoItem from "./TodoItem.svelte";
   import autosize from "autosize";
   import NoteColorPicker from "./NoteColorPicker.svelte";
   import { createEventDispatcher } from "svelte";
+  import { flip } from "svelte/animate";
+  import { fade, fly } from "svelte/transition";
 
   const dispatch = createEventDispatcher();
+
+  let todoList;
+  let lastCreated;
+  let titleInput;
 
   let noteTitle = "";
   let noteContent = "";
   let noteColor = "#fff";
+
+  let noteTodos = [];
+  let itemContent = "";
+
   let closed = true;
   let colorPicker = false;
+  let generatorMode = "todo";
 
-  const clickOutside = (element, callbackFunction) => {
-    function onClick(event) {
-      if (!element.contains(event.target)) {
-        callbackFunction();
+  const clickOutside = (node) => {
+    const handleClick = (event) => {
+      if (node && !node.contains(event.target) && !event.defaultPrevented) {
+        node.dispatchEvent(new CustomEvent("clickOutside", node));
       }
-    }
+    };
 
-    document.body.addEventListener("click", onClick);
+    document.addEventListener("click", handleClick, true);
 
     return {
-      update(newCallbackFunction) {
-        callbackFunction = newCallbackFunction;
-      },
       destroy() {
-        document.body.removeEventListener("click", onClick);
+        document.removeEventListener("click", handleClick, true);
       },
     };
   };
 
   const generateNote = (event) => {
     if (event.key === "Enter") {
-      dispatch("generateNote", { noteTitle, noteContent, noteColor });
-      noteTitle = "";
-      noteContent = "";
-      event.target.blur();
+      if (noteTitle === "") {
+        noteTitle = "Nessun titolo";
+      }
+      if (generatorMode === "note") {
+        console.log(noteTitle, noteContent, noteTodos, noteColor);
+        noteTodos = [];
+        dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
+        noteTitle = "";
+        noteContent = "";
+        event.target.blur();
+      } else {
+        noteContent = "";
+        dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
+        noteTitle = "";
+        noteTodos = [];
+        event.target.blur();
+      }
       closed = true;
     }
   };
 
+  const toggleTodo = () => {
+    generatorMode = "todo";
+    closed = false;
+    titleInput.focus();
+  };
+
+  const handleGeneratorMode = () => {
+    if (generatorMode === "todo" && closed === true) {
+      noteTodos = [];
+      generatorMode = "note";
+    }
+    closed = false;
+  };
+
+  const handleClose = () => {
+    if (noteTitle === "") {
+      noteTitle = "Nessun titolo";
+    }
+    if (noteContent !== "" && generatorMode === "note") {
+      noteTodos = [];
+      dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
+      noteContent = "";
+    } else if (noteTodos.length > 0 && generatorMode === "todo") {
+      noteContent = "";
+      dispatch("generateNote", { noteTitle, noteContent, noteTodos, noteColor });
+      noteTodos = [];
+    }
+    noteTitle = "";
+    closed = true;
+  };
+
   const handleChangeColor = (event) => {
     noteColor = event.detail.selectedColor;
+  };
+
+  const handleItemDelete = (event, itemIdx) => {
+    noteTodos.splice(itemIdx, 1);
+    noteTodos = noteTodos;
+  };
+
+  const createTodoItem = (event) => {
+    let newItem = {
+      content: itemContent,
+      status: false,
+    };
+    noteTodos.push(newItem);
+    noteTodos = noteTodos;
+    itemContent = "";
+    event.target.blur();
+  };
+
+  const handleSaveTodoContent = (event, todoIdx) => {
+    let toUpdate = noteTodos[todoIdx];
+    toUpdate.content = event.detail.content;
+    noteTodos = noteTodos;
+  };
+
+  const handleSaveTodoStatus = (event, todoIdx) => {
+    let toUpdate = noteTodos[todoIdx];
+    toUpdate.status = event.detail.status;
+    noteTodos = noteTodos;
   };
 </script>
 
 <section
   class="note-generator"
   class:note-generator--closed={closed === true}
-  use:clickOutside={() => (closed = true)}
+  use:clickOutside
+  on:clickOutside={(event) => handleClose(event)}
   on:keydown={generateNote}
   style="background-color: {noteColor}; border-color: {noteColor};"
 >
   <input
     class="note-generator__title"
     type="text"
+    bind:this={titleInput}
     bind:value={noteTitle}
     placeholder={closed ? "Scrivi una nota..." : "Titolo"}
-    on:click={() => {
-      closed = false;
-    }}
+    on:click={handleGeneratorMode}
   />
   {#if !closed}
-    <textarea
-      on:input={(event) => autosize(event.target)}
-      class="note-generator__content"
-      type="text"
-      bind:value={noteContent}
-      placeholder="Scrivi una nota..."
-    />
+    {#if generatorMode === "note"}
+      <!-- TEXT NOTE MODE -->
+      <textarea
+        on:input={(event) => autosize(event.target)}
+        class="note-generator__content"
+        type="text"
+        bind:value={noteContent}
+        placeholder="Scrivi una nota..."
+      />
+    {:else}
+      <!-- TODO MODE -->
+      <ul class="note-generator__todos" bind:this={todoList}>
+        {#each noteTodos as todoItem, idx (todoItem)}
+          <div bind:this={lastCreated} class="animation" animate:flip in:fade|local out:fly|local={{ x: 100 }}>
+            <TodoItem
+              status={todoItem.status}
+              content={todoItem.content}
+              on:saveTodoContent={(event) => handleSaveTodoContent(event, idx)}
+              on:saveTodoStatus={(event) => handleSaveTodoStatus(event, idx)}
+              on:deleteItem={(event) => handleItemDelete(event, idx)}
+            />
+          </div>
+        {/each}
+        <li class="note-generator__todo-menu">
+          <span class="note-generator__todo-menu-icon">+</span>
+          <input
+            class="note-generator__todo-menu-input"
+            type="text"
+            placeholder="Voce elenco"
+            bind:value={itemContent}
+            on:input={createTodoItem}
+          />
+        </li>
+      </ul>
+    {/if}
     <div class="note-generator__btn-1">
       <Btn iconName="pin" btnXSmall={true} />
     </div>
@@ -103,17 +212,12 @@
       <div class="note-generator__btn-9">
         <Btn iconName="undo" btnXSmall={true} />
       </div>
-      <button
-        class="note-generator__close"
-        on:click={() => {
-          closed = true;
-        }}>Chiudi</button
-      >
+      <button class="note-generator__close" on:click={(event) => handleClose(event)}>Chiudi</button>
     </div>
   {:else}
     <div class="note-generator__actions">
       <div class="note-generator__btn-10">
-        <Btn iconName="checkBoxed" btnSmall={true} />
+        <Btn iconName="checkBoxed" enabled={true} btnSmall={true} on:click={toggleTodo} />
       </div>
       <div class="note-generator__btn-11">
         <Btn iconName="brush" btnSmall={true} />
@@ -149,6 +253,37 @@
       grid-column: 1 / 2;
     }
 
+    &__todo-menu {
+      grid-column: 1 / -1;
+
+      padding: 0.4rem 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      &-icon {
+        font-family: "Roboto", sans-serif;
+        font-size: 2rem;
+        line-height: 1.2;
+        color: #888;
+        margin-left: 2.4rem;
+      }
+
+      &-input {
+        width: 100%;
+
+        border: transparent;
+        background: transparent;
+        outline: none;
+
+        &::placeholder {
+          font-weight: 700;
+        }
+      }
+    }
+
     &__content {
       grid-column: 1 / -1;
     }
@@ -173,6 +308,13 @@
     &__title {
       font-size: 1.6rem;
       font-weight: 500;
+    }
+
+    &__todos {
+      grid-column: 1 / -1;
+
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     &__content {
@@ -241,5 +383,9 @@
         gap: 0.5rem;
       }
     }
+  }
+
+  .animation:not(:nth-last-child(2)) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
 </style>

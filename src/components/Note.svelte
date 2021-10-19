@@ -1,25 +1,27 @@
 <script>
   import Btn from "./Btn.svelte";
+  import TodoItem from "./TodoItem.svelte";
   import NoteColorPicker from "./NoteColorPicker.svelte";
   import { createEventDispatcher } from "svelte";
 
   export let draggable = true;
   export let content = "";
   export let title = "";
-  export let noteColor = "#fff";
+  export let color = "#fff";
+  export let todos = [];
 
   export let hovered = false;
   export let dragged = false;
 
   let selected = false;
-  let open = true;
   let showMenu = false;
   let colorPicker = false;
 
   const dispatch = createEventDispatcher();
 
   const handleChangeColor = (event) => {
-    noteColor = event.detail.selectedColor;
+    color = event.detail.selectedColor;
+    dispatch("changeColor", { color });
   };
 
   const handleSelection = () => {
@@ -34,14 +36,15 @@
   };
 
   const heandleOpenNote = (event) => {
-    if (event.target.tagName !== "LI") {
+    if (event.target.id === "note" || event.target.id === "title" || event.target.id === "content") {
       dispatch("openNote");
     }
   };
 </script>
 
 <article
-  style="background-color: {noteColor}; "
+  id="note"
+  style="background-color: {color}; "
   class="note"
   class:note--selected={selected}
   class:hovered
@@ -55,14 +58,22 @@
   ondragover="return false"
 >
   <img class="note__select" src="assets/icons/icon-select.svg" alt="Select" on:click={handleSelection} />
-  <div class="note__header">
+  <div id="title" class="note__header">
     <h3 class="note__title">{title}</h3>
     <div class="note__btn-1">
       <Btn iconName="pin" btnSmall={true} />
     </div>
   </div>
-  <p class="note__content">
-    {content}
+  <p id="content" class="note__content">
+    {#if todos.length > 0}
+      {#each todos as todoItem, idx (todoItem)}
+        <div class="animation">
+          <TodoItem status={todoItem.status} content={todoItem.content} />
+        </div>
+      {/each}
+    {:else}
+      {content}
+    {/if}
   </p>
   <p />
   <div class="note__controls">
@@ -73,7 +84,7 @@
       <Btn iconName="userPlus" btnXSmall={true} />
     </div>
     <div class="note__btn-4" on:pointerenter={() => (colorPicker = true)} on:pointerleave={() => (colorPicker = false)}>
-      <NoteColorPicker {noteColor} isVisible={colorPicker} on:colorChange={(event) => handleChangeColor(event)} />
+      <NoteColorPicker noteColor={color} isVisible={colorPicker} on:colorChange={(event) => handleChangeColor(event)} />
       <Btn iconName="palette" btnXSmall={true} enabled={true} />
     </div>
     <div class="note__btn-5">

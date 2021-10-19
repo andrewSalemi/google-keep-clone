@@ -6,6 +6,7 @@
 
   const dispatch = createEventDispatcher();
 
+  export let noteIdx;
   export let noteTitle = "";
   export let noteContent = "";
   export let noteColor = "#fff";
@@ -14,6 +15,15 @@
 
   const handleChangeColor = (event) => {
     noteColor = event.detail.selectedColor;
+  };
+
+  const noteSaveModify = () => {
+    dispatch("noteSaveModify", {
+      noteIdx: noteIdx,
+      newTitle: noteTitle,
+      newContent: noteContent,
+      newColor: noteColor,
+    });
   };
 </script>
 
@@ -24,7 +34,6 @@
     class="note-full__content"
     type="text"
     bind:value={noteContent}
-    placeholder="Scrivi una nota..."
   />
   <div class="note-full__btn-1">
     <Btn iconName="pin" btnXSmall={true} />
@@ -59,13 +68,14 @@
     <div class="note-full__btn-9">
       <Btn iconName="undo" btnXSmall={true} />
     </div>
-    <button class="note-full__close">Chiudi</button>
+    <button class="note-full__close" on:click={noteSaveModify}>Chiudi</button>
   </div>
 </section>
 
 <style lang="scss">
   .note-full {
     width: 60rem;
+    min-height: 20rem;
 
     border-radius: 8px;
     border: 1px solid var(--color-gray-light-1);
@@ -77,11 +87,6 @@
     padding-top: 0.4rem;
 
     transition: all 200ms ease-in;
-
-    &--closed {
-      padding: 0;
-      height: 4.2rem;
-    }
 
     &__title {
       grid-column: 1 / 2;
@@ -163,20 +168,6 @@
 
       &:hover {
         background-color: rgba(0, 0, 0, 0.05);
-      }
-    }
-
-    &--closed {
-      display: flex;
-      align-items: center;
-
-      & > .note-full__title {
-        width: 100%;
-        margin-right: auto;
-      }
-
-      & > .note-full__actions {
-        gap: 0.5rem;
       }
     }
   }

@@ -1,10 +1,11 @@
 <script>
   import Btn from "./Btn.svelte";
   import NoteColorPicker from "./NoteColorPicker.svelte";
-  import { selectedNotes } from "../store/selectedNotes";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
+
+  export let selectionCounter = 0;
 
   let colorPicker = false;
   let showMenu = false;
@@ -27,7 +28,7 @@
     <Btn enabled={true} iconName={"close"} on:click={handleUndoSelection} />
   </div>
   <span class="header-selection__text">
-    {$selectedNotes.length}&nbsp;selezionat{$selectedNotes.length > 1 ? "i" : "o"}
+    {selectionCounter}&nbsp;selezionat{selectionCounter > 1 ? "i" : "o"}
   </span>
   <div class="header-selection__actions">
     <div class="header-selection__btn-1">

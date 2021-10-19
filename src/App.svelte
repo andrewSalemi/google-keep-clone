@@ -6,37 +6,40 @@
   import NoteGenerator from "./components/NoteGenerator.svelte";
   import SelectionHeader from "./components/SelectionHeader.svelte";
   import { notes } from "./store/notes";
-  import { selectedNotes } from "./store/selectedNotes";
-  import { searchNotes } from "./store/searchNotes";
   import { flip } from "svelte/animate";
+  import { scale } from "svelte/transition";
+  import { cubicIn, cubicOut } from "svelte/easing";
   import { onMount } from "svelte";
 
   let currentlyDragged = -1;
   let currentlyHovered = -1;
   let currentlyOpen = -1;
 
+  let filterNotes = [];
+  let selNotes = [];
+
   onMount(() => {
-    searchNotes.update((oldSearch) => {
-      return [...$notes];
-    });
+    filterNotes = [...$notes];
   });
 
-  $: notesDraggable = $searchNotes.length === $notes.length;
+  $: notesDraggable = filterNotes.length === $notes.length;
 
   // Note Generation
   const handleNoteGeneration = (event) => {
-    const newNote = {
+    console.log(event.detail);
+    let newNote = {
       noteTitle: event.detail.noteTitle,
       noteContent: event.detail.noteContent,
+      noteTodos: event.detail.noteTodos,
       noteColor: event.detail.noteColor,
     };
-    console.log(event.detail);
+
     notes.update((currentNotes) => {
-      return [newNote, ...currentNotes];
+      currentNotes.unshift(newNote);
+      return currentNotes;
     });
-    searchNotes.update((currentSearch) => {
-      return [newNote, ...currentSearch];
-    });
+    filterNotes = [...$notes];
+    console.log($notes);
   };
 
   // Note modify
@@ -46,9 +49,32 @@
   };
 
   const closeNote = (event) => {
-    if (event.target.tagName === "DIV") {
+    console.log(event);
+    if (event.target.id === "noteFull") {
       currentlyOpen = -1;
     }
+  };
+
+  const handleNoteModify = (event) => {
+    notes.update((oldNotes) => {
+      let toUpdate = oldNotes[currentlyOpen];
+      toUpdate.noteTitle = event.detail.newTitle;
+      toUpdate.noteContent = event.detail.newContent;
+      toUpdate.noteColor = event.detail.newColor;
+      return oldNotes;
+    });
+    currentlyOpen = -1;
+    filterNotes = [...$notes];
+  };
+
+  const handleChangeColor = (event, noteIdx) => {
+    notes.update((oldNotes) => {
+      let toUpdate = oldNotes[noteIdx];
+      toUpdate.noteColor = event.detail.noteColor;
+      return oldNotes;
+    });
+
+    filterNotes = [...$notes];
   };
 
   // Drag and Drop
@@ -81,77 +107,62 @@
       }
       return oldNotes;
     });
-    searchNotes.update((oldNotes) => {
-      return [...$notes];
-    });
+    filterNotes = [...$notes];
   };
 
   // Selection
   const handleSelection = (event, idx) => {
     if (!event.detail.selectionStatus) {
-      selectedNotes.update((oldSelection) => {
-        return oldSelection.filter((selection) => selection !== $notes[idx]);
-      });
+      selNotes = selNotes.filter((selection) => selection !== $notes[idx]);
     } else {
-      selectedNotes.update((oldSelection) => {
-        return [...oldSelection, $notes[idx]];
-      });
+      selNotes = [...selNotes, $notes[idx]];
     }
   };
 
   const handleSelectionColorChange = (color) => {
     notes.update((oldNotes) => {
-      let toUpdate = $selectedNotes.map((selection) => {
+      let toUpdate = selNotes.map((selection) => {
         return oldNotes.indexOf(selection);
       });
       toUpdate.forEach((idx) => (oldNotes[idx].noteColor = color));
       return oldNotes;
     });
-    searchNotes.update((oldNotes) => {
-      return [...$notes];
-    });
+    filterNotes = [...$notes];
   };
 
   // Searching
   const heandleSearch = (event) => {
     const searchValue = event.detail.searchValue.toLowerCase();
-    searchNotes.update((oldNotes) => {
-      if (searchValue.length === 0) {
-        return [...$notes];
-      } else {
-        return oldNotes.filter(
-          (note) =>
-            note.noteContent.toLowerCase().includes(searchValue) || note.noteTitle.toLowerCase().includes(searchValue)
-        );
-      }
-    });
+    if (searchValue.length === 0) {
+      filterNotes = [...$notes];
+    } else {
+      filterNotes = filterNotes.filter(
+        (note) =>
+          note.noteContent.toLowerCase().includes(searchValue) || note.noteTitle.toLowerCase().includes(searchValue)
+      );
+    }
   };
 
   // Delete
   const handleDelete = (noteIdx, content) => {
-    if ($searchNotes.length === $notes.length) {
+    if (filterNotes.length === $notes.length) {
       notes.update((oldNotes) => {
         oldNotes.splice(noteIdx, 1);
         return [...oldNotes];
-      });
-      searchNotes.update((oldNotes) => {
-        return [...$notes];
       });
     } else {
       notes.update((oldNotes) => {
         return oldNotes.filter((note) => note.noteContent !== content);
       });
-      searchNotes.update((oldNotes) => {
-        return [...$notes];
-      });
     }
+    filterNotes = [...$notes];
   };
 
   const handleSelectionDeletion = () => {
     notes.update((oldNotes) => {
       return oldNotes.filter(
         (note) =>
-          !$selectedNotes.some(
+          !selNotes.some(
             (toDelete) =>
               toDelete.noteTitle === note.noteTitle &&
               toDelete.noteContent === note.noteContent &&
@@ -160,28 +171,21 @@
       );
     });
 
-    selectedNotes.update(() => {
-      return [];
-    });
+    selNotes = [];
 
-    searchNotes.update((oldNotes) => {
-      return [...$notes];
-    });
+    filterNotes = [...$notes];
   };
 </script>
 
 <div class="header">
-  {#if $selectedNotes.length === 0}
+  {#if selNotes.length === 0}
     <Header on:search={(event) => heandleSearch(event)} />
   {:else}
     <SelectionHeader
+      selectionCounter={selNotes.length}
       on:selectionDeletion={handleSelectionDeletion}
       on:selectionColorChange={(event) => handleSelectionColorChange(event.detail.selectedColor)}
-      on:undoSelection={() => {
-        selectedNotes.update((oldNotes) => {
-          return [];
-        });
-      }}
+      on:undoSelection={() => (selNotes = [])}
     />
   {/if}
 </div>
@@ -199,13 +203,14 @@
       currentlyHovered = -1;
     }}
   >
-    {#each $searchNotes as note, idx (note)}
+    {#each filterNotes as note, idx (note)}
       <div class="main__note" class:opened={idx === currentlyOpen} animate:flip={{ duration: 200 }}>
         <!-- ondragover="return false stop the default behaviour" -->
         <Note
           title={note.noteTitle}
           content={note.noteContent}
-          noteColor={note.noteColor}
+          todos={note.noteTodos}
+          color={note.noteColor}
           dragged={currentlyDragged === idx}
           hovered={currentlyHovered === idx}
           draggable={notesDraggable}
@@ -217,6 +222,7 @@
           on:dragenter={() => (currentlyHovered = idx)}
           on:delete={() => handleDelete(idx, note.noteContent)}
           on:openNote={() => handleNoteOpen(idx)}
+          on:changeColor={(event) => handleChangeColor(event, idx)}
         />
       </div>
     {/each}
@@ -224,12 +230,25 @@
 </main>
 
 {#if currentlyOpen !== -1}
-  <div class="note-full" class:note-full--show={currentlyOpen !== -1} on:click={(event) => closeNote(event)}>
-    <NoteFull
-      noteTitle={$notes[currentlyOpen].noteTitle}
-      noteContent={$notes[currentlyOpen].noteContent}
-      noteColor={$notes[currentlyOpen].noteColor}
-    />
+  <div
+    id="noteFull"
+    class="note-full"
+    class:note-full--show={currentlyOpen !== -1}
+    on:click={(event) => closeNote(event)}
+  >
+    <div
+      class="note-full__container"
+      in:scale={{ duration: 200, delay: 120, easing: cubicIn, start: 0, opacity: 0 }}
+      out:scale={{ duration: 250, delay: 0, easing: cubicOut }}
+    >
+      <NoteFull
+        on:noteSaveModify={(event) => handleNoteModify(event)}
+        noteIdx={currentlyOpen}
+        noteTitle={$notes[currentlyOpen].noteTitle}
+        noteContent={$notes[currentlyOpen].noteContent}
+        noteColor={$notes[currentlyOpen].noteColor}
+      />
+    </div>
   </div>
 {/if}
 
@@ -277,21 +296,23 @@
       column-gap: 2.4rem;
       row-gap: 1.8rem;
     }
+
+    &__note {
+      opacity: 1;
+
+      transition: opacity 200ms ease-out;
+    }
   }
 
   .opened {
-    position: absolute;
-    top: 30rem;
-    left: 50%;
-
-    transform: translate(-50%, -50%);
+    opacity: 0;
   }
 
   .note-full {
     width: 100%;
     height: 120vh;
 
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: transparent;
 
     position: absolute;
     top: 40%;
@@ -304,5 +325,11 @@
     align-items: center;
 
     transform: translate(-50%, -50%);
+
+    transition: background-color 200ms ease-in;
+
+    &--show {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
   }
 </style>
