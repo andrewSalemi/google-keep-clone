@@ -7,13 +7,15 @@
   import SelectionHeader from "./components/SelectionHeader.svelte";
   import { notes } from "./store/notes";
   import { flip } from "svelte/animate";
-  import { scale, fade } from "svelte/transition";
+  import { scale } from "svelte/transition";
   import { cubicIn, cubicOut } from "svelte/easing";
   import { onMount } from "svelte";
 
   let currentlyDragged = -1;
   let currentlyHovered = -1;
   let currentlyOpen = -1;
+
+  let smallSidenav = false;
 
   let filterNotes = [];
   let selNotes = [];
@@ -191,6 +193,15 @@
     filterNotes = [...$notes];
   };
 
+  const handelDeleteTodoNote = (noteIdx) => {
+    notes.update((oldNotes) => {
+      oldNotes.splice(noteIdx, 1);
+      return oldNotes;
+    });
+
+    filterNotes = [...$notes];
+  };
+
   const handleSelectionDeletion = () => {
     notes.update((oldNotes) => {
       return oldNotes.filter(
@@ -212,7 +223,13 @@
 
 <div class="header">
   {#if selNotes.length === 0}
-    <Header on:search={(event) => heandleSearch(event)} />
+    <Header
+      on:search={(event) => heandleSearch(event)}
+      on:toggleSidenav={() => {
+        smallSidenav = !smallSidenav;
+        console.log(smallSidenav);
+      }}
+    />
   {:else}
     <SelectionHeader
       selectionCounter={selNotes.length}
@@ -223,7 +240,7 @@
   {/if}
 </div>
 
-<div class="sidenav"><SideNav /></div>
+<div class="sidenav" {smallSidenav}><SideNav /></div>
 
 <main class="main">
   <div class="main__generator">
@@ -244,7 +261,6 @@
         in:scale|locale={{ duration: 100, start: 0 }}
         out:scale|locale={{ duration: 100, start: 0 }}
       >
-        {(console.log(note, idx), "")}
         <Note
           title={note.noteTitle}
           content={note.noteContent}
@@ -258,6 +274,7 @@
           on:drop={(event) => handleDrop(event, idx)}
           on:dragenter={() => (currentlyHovered = idx)}
           on:delete={() => handleDelete(idx, note.noteContent)}
+          on:deleteTodoNote={() => handelDeleteTodoNote(idx)}
           on:openNote={() => handleNoteOpen(idx)}
           on:changeColor={(event) => handleChangeColor(event, idx)}
           on:updateTodoContent={(event) => handelTodoContentUpdate(event, idx)}
@@ -286,6 +303,7 @@
         noteIdx={currentlyOpen}
         noteTitle={$notes[currentlyOpen].noteTitle}
         noteContent={$notes[currentlyOpen].noteContent}
+        noteTodos={$notes[currentlyOpen].noteTodos}
         color={$notes[currentlyOpen].noteColor}
       />
     </div>

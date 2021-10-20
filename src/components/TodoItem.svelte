@@ -57,8 +57,15 @@
     align-items: center;
     gap: 1.2rem;
 
+    transition: all 200ms ease-in;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
     &__status {
       margin-left: 3.2rem;
+
+      cursor: pointer;
     }
 
     &__content {
@@ -75,6 +82,8 @@
 
       &--done {
         text-decoration: line-through;
+
+        cursor: not-allowed;
       }
     }
 

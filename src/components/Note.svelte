@@ -60,7 +60,11 @@
   const handleItemDelete = (event, itemIdx) => {
     todos.splice(itemIdx, 1);
     todos = todos;
-    dispatch("todoItemDelete", { todos });
+    if (todos.length === 0) {
+      dispatch("deleteTodoNote");
+    } else {
+      dispatch("todoItemDelete", { todos });
+    }
   };
 </script>
 

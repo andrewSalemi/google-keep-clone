@@ -8,14 +8,17 @@
   const dispatch = createEventDispatcher();
 
   const handleSearch = (event) => {
-    console.log(event);
     dispatch("search", { searchValue: searchValue });
+  };
+
+  const handleSmallSidenav = () => {
+    dispatch("toggleSidenav");
   };
 </script>
 
 <header class="header">
   <div class="header__sidenav">
-    <Btn iconName="menu" enabled={true} on:click={() => console.log("TODO")} />
+    <Btn iconName="menu" enabled={true} on:click={handleSmallSidenav} />
     <div class="header__position">
       <img class="header__logo" src="assets/images/keep-logo.png" alt="Keep logo" />
       <p class="header__text">Keep</p>

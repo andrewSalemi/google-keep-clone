@@ -2,16 +2,24 @@
   import Btn from "./Btn.svelte";
   import autosize from "autosize";
   import NoteColorPicker from "./NoteColorPicker.svelte";
+  import TodoItem from "./TodoItem.svelte";
   import { createEventDispatcher } from "svelte";
+  import { flip } from "svelte/animate";
+  import { fade, fly } from "svelte/transition";
 
   const dispatch = createEventDispatcher();
 
   export let noteIdx;
   export let noteTitle = "";
   export let noteContent = "";
+  export let noteTodos = [];
   export let color = "#fff";
 
+  let itemContent = "";
+
   let colorPicker = false;
+  let todoList;
+  let lastCreated;
 
   const handleChangeColor = (event) => {
     color = event.detail.selectedColor;
@@ -25,16 +33,78 @@
       newColor: color,
     });
   };
+
+  const createTodoItem = (event) => {
+    let newItem = {
+      content: itemContent,
+      status: false,
+    };
+    noteTodos.push(newItem);
+    noteTodos = noteTodos;
+    itemContent = "";
+    event.target.blur();
+  };
+
+  const handleSaveTodoContent = (event, itemIdx) => {
+    let toUpdate = noteTodos[itemIdx];
+    toUpdate.content = event.detail.content;
+    noteTodos = noteTodos;
+    dispatch("updateTodoContent", { itemIdx, content: event.detail.content });
+  };
+
+  const handleSaveTodoStatus = (event, itemIdx) => {
+    let toUpdate = noteTodos[itemIdx];
+    toUpdate.status = event.detail.status;
+    noteTodos = noteTodos;
+    dispatch("updateTodoStatus", { itemIdx, status: event.detail.status });
+  };
+
+  const handleItemDelete = (event, itemIdx) => {
+    noteTodos.splice(itemIdx, 1);
+    noteTodos = noteTodos;
+    if (noteTodos.length === 0) {
+      dispatch("deleteTodoNote");
+    } else {
+      dispatch("todoItemDelete", { noteTodos });
+    }
+  };
 </script>
 
 <section class="note-full" style="background-color: {color}; border-color: {color};">
   <input class="note-full__title" type="text" bind:value={noteTitle} />
-  <textarea
-    on:input={(event) => autosize(event.target)}
-    class="note-full__content"
-    type="text"
-    bind:value={noteContent}
-  />
+  {#if noteTodos.length === 0}
+    <textarea
+      on:input={(event) => autosize(event.target)}
+      class="note-full__content"
+      type="text"
+      bind:value={noteContent}
+    />
+  {:else}
+    <ul class="note-full__todos" bind:this={todoList}>
+      {#each noteTodos as todoItem, idx (todoItem)}
+        <div bind:this={lastCreated} class="animation" animate:flip in:fade|local out:fly|local={{ x: 100 }}>
+          <TodoItem
+            autofocus={true}
+            status={todoItem.status}
+            content={todoItem.content}
+            on:saveTodoContent={(event) => handleSaveTodoContent(event, idx)}
+            on:saveTodoStatus={(event) => handleSaveTodoStatus(event, idx)}
+            on:deleteItem={(event) => handleItemDelete(event, idx)}
+          />
+        </div>
+      {/each}
+      <li class="note-full__todo-menu">
+        <span class="note-full__todo-menu-icon">+</span>
+        <input
+          class="note-full__todo-menu-input"
+          type="text"
+          placeholder="Voce elenco"
+          bind:value={itemContent}
+          on:input={createTodoItem}
+        />
+      </li>
+    </ul>
+  {/if}
   <div class="note-full__btn-1">
     <Btn iconName="pin" btnXSmall={true} />
   </div>
@@ -68,7 +138,7 @@
     <div class="note-full__btn-9">
       <Btn iconName="undo" btnXSmall={true} />
     </div>
-    <button class="note-full__close" on:click={noteSaveModify}>Chiudi</button>
+    <button class="note-full__close" on:click={noteSaveModify}>Salva</button>
   </div>
 </section>
 
@@ -94,6 +164,37 @@
 
     &__content {
       grid-column: 1 / -1;
+    }
+
+    &__todo-menu {
+      grid-column: 1 / -1;
+
+      padding: 0.4rem 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      &-icon {
+        font-family: "Roboto", sans-serif;
+        font-size: 2rem;
+        line-height: 1.2;
+        color: #888;
+        margin-left: 2.4rem;
+      }
+
+      &-input {
+        width: 100%;
+
+        border: transparent;
+        background: transparent;
+        outline: none;
+
+        &::placeholder {
+          font-weight: 700;
+        }
+      }
     }
 
     &__title,
@@ -170,5 +271,17 @@
         background-color: rgba(0, 0, 0, 0.05);
       }
     }
+  }
+
+  .animation:not(:nth-last-child(1)) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .animation:first-child {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .animation:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
 </style>
