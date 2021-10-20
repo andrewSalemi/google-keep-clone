@@ -169,6 +169,7 @@
     if (searchValue.length === 0) {
       filterNotes = [...$notes];
     } else {
+      filterNotes = [...$notes];
       filterNotes = filterNotes.filter(
         (note) =>
           note.noteContent.toLowerCase().includes(searchValue) || note.noteTitle.toLowerCase().includes(searchValue)
