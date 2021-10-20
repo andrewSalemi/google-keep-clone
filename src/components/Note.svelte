@@ -97,6 +97,7 @@
           <TodoItem
             status={todoItem.status}
             content={todoItem.content}
+            draggable={false}
             on:saveTodoContent={(event) => handleSaveTodoContent(event, idx)}
             on:saveTodoStatus={(event) => handleSaveTodoStatus(event, idx)}
             on:deleteItem={(event) => handleItemDelete(event, idx)}

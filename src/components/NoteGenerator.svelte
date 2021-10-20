@@ -20,6 +20,8 @@
 
   let noteTodos = [];
   let itemContent = "";
+  let currentlyDragged = -1;
+  let currentlyHovered = -1;
 
   let closed = true;
   let colorPicker = false;
@@ -112,6 +114,36 @@
     toUpdate.status = event.detail.status;
     noteTodos = noteTodos;
   };
+
+  const startDrag = (event, todoIdx) => {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.dropEffect = "move";
+    const start = todoIdx;
+    currentlyDragged = todoIdx;
+    event.dataTransfer.setData("text/plain", start); // Storing todo idx for the next event
+    let dragImage = new Image();
+    event.dataTransfer.setDragImage(dragImage, 40, 40);
+    console.log(`Start dragging item ${todoIdx}`);
+  };
+
+  const handleDrop = (event, todoHoverIdx) => {
+    currentlyDragged = -1;
+    currentlyHovered = -1;
+    console.log("dropped");
+    event.dataTransfer.dropEffect = "move";
+    const start = parseInt(event.dataTransfer.getData("text/plain"));
+
+    console.log(`Moving item ${start} over item ${todoHoverIdx}`);
+    if (start < todoHoverIdx) {
+      noteTodos.splice(todoHoverIdx + 1, 0, noteTodos[start]);
+      noteTodos.splice(start, 1);
+    } else {
+      noteTodos.splice(todoHoverIdx, 0, noteTodos[start]);
+      noteTodos.splice(start + 1, 1);
+    }
+
+    noteTodos = noteTodos;
+  };
 </script>
 
 <section
@@ -144,11 +176,23 @@
       <!-- TODO MODE -->
       <ul class="note-generator__todos" bind:this={todoList}>
         {#each noteTodos as todoItem, idx (todoItem)}
-          <div bind:this={lastCreated} class="animation" animate:flip in:fade|local out:fly|local={{ x: 100 }}>
+          <div
+            bind:this={lastCreated}
+            class="animation"
+            animate:flip={{ duration: 50 }}
+            in:fade|local
+            out:fly|local={{ x: 100 }}
+          >
             <TodoItem
+              draggable={true}
+              dragged={currentlyDragged === idx}
+              hovered={currentlyHovered === idx}
               autofocus={true}
               status={todoItem.status}
               content={todoItem.content}
+              on:dragstart={(event) => startDrag(event, idx)}
+              on:drop={(event) => handleDrop(event, idx)}
+              on:dragenter={() => (currentlyHovered = idx)}
               on:saveTodoContent={(event) => handleSaveTodoContent(event, idx)}
               on:saveTodoStatus={(event) => handleSaveTodoStatus(event, idx)}
               on:deleteItem={(event) => handleItemDelete(event, idx)}

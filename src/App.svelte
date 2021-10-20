@@ -45,11 +45,9 @@
   // Note modify
   const handleNoteOpen = (openNoteIdx) => {
     currentlyOpen = openNoteIdx;
-    console.log($notes[currentlyOpen]);
   };
 
   const closeNote = (event) => {
-    console.log(event);
     if (event.target.id === "noteFull") {
       currentlyOpen = -1;
     }
@@ -118,7 +116,7 @@
     event.dataTransfer.dropEffect = "move";
     const start = noteIdx;
     currentlyDragged = noteIdx;
-    event.dataTransfer.setData("text/plain", start); // Storing note idx for next the next event
+    event.dataTransfer.setData("text/plain", start); // Storing note idx for the next event
     let dragImage = new Image();
     event.dataTransfer.setDragImage(dragImage, 40, 40);
     console.log("Start drag");
@@ -223,13 +221,7 @@
 
 <div class="header">
   {#if selNotes.length === 0}
-    <Header
-      on:search={(event) => heandleSearch(event)}
-      on:toggleSidenav={() => {
-        smallSidenav = !smallSidenav;
-        console.log(smallSidenav);
-      }}
-    />
+    <Header on:search={(event) => heandleSearch(event)} />
   {:else}
     <SelectionHeader
       selectionCounter={selNotes.length}

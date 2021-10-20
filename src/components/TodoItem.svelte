@@ -8,6 +8,9 @@
   export let status = false;
   export let content = "";
   export let autofocus = false;
+  export let dragged = false;
+  export let hovered = false;
+  export let draggable = true;
 
   onMount(() => {
     if (autofocus) {
@@ -28,7 +31,19 @@
   };
 </script>
 
-<li class="todo-item">
+<li
+  class="todo-item"
+  {draggable}
+  class:dragged
+  class:hovered
+  on:dragstart
+  on:drop
+  on:dragenter
+  ondragover="return false"
+>
+  <div class="todo-item__dnd-icon" class:draggable>
+    <Btn enabled={true} btnXSmall={true} iconName={"dnd"} />
+  </div>
   <input class="todo-item__status" type="checkbox" bind:checked={status} on:change={saveTodoStatus} />
   <input
     id="itemContent"
@@ -62,8 +77,13 @@
       background-color: rgba(0, 0, 0, 0.05);
     }
 
+    &__dnd-icon {
+      display: none;
+      opacity: 0;
+    }
+
     &__status {
-      margin-left: 3.2rem;
+      margin-left: 1.2rem;
 
       cursor: pointer;
     }
@@ -96,5 +116,16 @@
     &:hover &__delete {
       opacity: 1;
     }
+  }
+
+  .draggable {
+    display: inline-block;
+    opacity: 1;
+  }
+  .dragged {
+    opacity: 20%;
+  }
+  .hovered {
+    box-shadow: 0 5px 2rem 2px rgba(0, 0, 0, 0.1);
   }
 </style>

@@ -1,5 +1,5 @@
 <script>
-  let current = "Note";
+  let current = "note";
 </script>
 
 <nav class="sidenav">
