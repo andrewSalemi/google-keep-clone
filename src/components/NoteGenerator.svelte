@@ -6,7 +6,6 @@
   import { createEventDispatcher } from "svelte";
   import { flip } from "svelte/animate";
   import { fade, fly } from "svelte/transition";
-  import Note from "./Note.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -283,6 +282,8 @@
 
     &__title {
       grid-column: 1 / 2;
+
+      text-overflow: ellipsis;
     }
 
     &__todo-menu {

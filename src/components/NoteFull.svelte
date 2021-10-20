@@ -33,6 +33,7 @@
       noteIdx: noteIdx,
       newTitle: noteTitle,
       newContent: noteContent,
+      newTodos: noteTodos,
       newColor: color,
     });
   };

@@ -1,5 +1,6 @@
 <script>
   import Btn from "./Btn.svelte";
+  import autosize from "autosize";
   import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -41,18 +42,20 @@
   on:dragenter
   ondragover="return false"
 >
-  <div class="todo-item__dnd-icon" class:draggable>
-    <Btn enabled={true} btnXSmall={true} iconName={"dnd"} />
-  </div>
+  <img src="assets/icons/icon-dnd.svg" alt="Drag and Drop" class="todo-item__dnd-icon" class:draggable />
   <input class="todo-item__status" type="checkbox" bind:checked={status} on:change={saveTodoStatus} />
-  <input
+  <textarea
     id="itemContent"
     class="todo-item__content"
     class:todo-item__content--done={status}
     type="text"
     bind:value={content}
-    on:input={saveTodoContent}
+    on:input={(event) => {
+      autosize(event.target);
+      saveTodoContent();
+    }}
     spellcheck="false"
+    placeholder="Todo"
     autocomplete="off"
     disabled={status}
     bind:this={ref}
@@ -78,6 +81,9 @@
     }
 
     &__dnd-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+
       display: none;
       opacity: 0;
     }
@@ -91,12 +97,16 @@
     &__content {
       font-family: "Roboto", sans-serif;
       font-size: 1.2rem;
+      line-height: 1;
 
       width: 100%;
 
       border: transparent;
       background: transparent;
       outline: none;
+
+      resize: none;
+      padding-top: 1.4rem;
 
       margin-right: auto;
 

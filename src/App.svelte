@@ -58,6 +58,7 @@
       let toUpdate = oldNotes[currentlyOpen];
       toUpdate.noteTitle = event.detail.newTitle;
       toUpdate.noteContent = event.detail.newContent;
+      toUpdate.noteTodos = event.detail.newTodos;
       toUpdate.noteColor = event.detail.newColor;
       return oldNotes;
     });
@@ -292,12 +293,15 @@
       out:scale={{ duration: 250, delay: 0, easing: cubicOut }}
     >
       <NoteFull
-        on:noteSaveModify={(event) => handleNoteModify(event)}
         noteIdx={currentlyOpen}
         noteTitle={$notes[currentlyOpen].noteTitle}
         noteContent={$notes[currentlyOpen].noteContent}
         noteTodos={$notes[currentlyOpen].noteTodos}
         color={$notes[currentlyOpen].noteColor}
+        on:noteSaveModify={(event) => handleNoteModify(event)}
+        on:updateTodoContent={(event) => handelTodoContentUpdate(event, currentlyOpen)}
+        on:updateTodoStatus={(event) => handelTodoStatusUpdate(event, currentlyOpen)}
+        on:todoItemDelete={(event) => handleTodoItemDelete(event, currentlyOpen)}
       />
     </div>
   </div>
