@@ -29,10 +29,17 @@
 html {
   /* 10/16 -> 1 rem = 10px*/
   font-size: 62.5%;
+  height: 100%;
 
   box-sizing: border-box;
 }
 
 body {
   overflow-x: hidden;
+
+  height: 100%;
+
+  display: grid;
+  grid-template-columns: 30rem 1fr;
+  grid-template-rows: 6.4rem auto;
 }

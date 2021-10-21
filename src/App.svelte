@@ -14,11 +14,13 @@
   let currentlyDragged = -1;
   let currentlyHovered = -1;
   let currentlyOpen = -1;
+  let currentPage = "note";
 
-  let smallSidenav = false;
+  let showSidenav = true;
 
   let filterNotes = [];
   let selNotes = [];
+  let deletedNotes = [];
 
   onMount(() => {
     filterNotes = [...$notes];
@@ -182,7 +184,8 @@
   const handleDelete = (noteIdx, content) => {
     if (filterNotes.length === $notes.length) {
       notes.update((oldNotes) => {
-        oldNotes.splice(noteIdx, 1);
+        let deleted = oldNotes.splice(noteIdx, 1);
+        deletedNotes = [...deletedNotes, ...deleted];
         return [...oldNotes];
       });
     } else {
@@ -223,7 +226,7 @@
 
 <div class="header">
   {#if selNotes.length === 0}
-    <Header on:search={(event) => heandleSearch(event)} />
+    <Header on:search={(event) => heandleSearch(event)} bind:sidebarOpen={showSidenav} />
   {:else}
     <SelectionHeader
       selectionCounter={selNotes.length}
@@ -234,9 +237,13 @@
   {/if}
 </div>
 
-<div class="sidenav" {smallSidenav}><SideNav /></div>
+{#if showSidenav}
+  <div class="sidenav">
+    <SideNav bind:current={currentPage} />
+  </div>
+{/if}
 
-<main class="main">
+<main class="main" class:main--no-sidenav={!showSidenav}>
   <div class="main__generator">
     <NoteGenerator on:generateNote={handleNoteGeneration} />
   </div>
@@ -247,36 +254,69 @@
       currentlyHovered = -1;
     }}
   >
-    {#each filterNotes as note, idx (note)}
-      <div
-        class="main__note"
-        class:opened={idx === currentlyOpen}
-        animate:flip={{ duration: 200 }}
-        in:scale|locale={{ duration: 100, start: 0 }}
-        out:scale|locale={{ duration: 100, start: 0 }}
-      >
-        <Note
-          title={note.noteTitle}
-          content={note.noteContent}
-          todos={note.noteTodos}
-          color={note.noteColor}
-          dragged={currentlyDragged === idx}
-          hovered={currentlyHovered === idx}
-          draggable={notesDraggable}
-          on:selection={(event) => handleSelection(event, idx)}
-          on:dragstart={(event) => startDrag(event, idx)}
-          on:drop={(event) => handleDrop(event, idx)}
-          on:dragenter={() => (currentlyHovered = idx)}
-          on:delete={() => handleDelete(idx, note.noteContent)}
-          on:deleteTodoNote={() => handelDeleteTodoNote(idx)}
-          on:openNote={() => handleNoteOpen(idx)}
-          on:changeColor={(event) => handleChangeColor(event, idx)}
-          on:updateTodoContent={(event) => handelTodoContentUpdate(event, idx)}
-          on:updateTodoStatus={(event) => handelTodoStatusUpdate(event, idx)}
-          on:todoItemDelete={(event) => handleTodoItemDelete(event, idx)}
-        />
-      </div>
-    {/each}
+    {#if currentPage === "note"}
+      {#each filterNotes as note, idx (note)}
+        <div
+          class="main__note"
+          class:opened={idx === currentlyOpen}
+          animate:flip={{ duration: 200 }}
+          in:scale|locale={{ duration: 100, start: 0 }}
+          out:scale|locale={{ duration: 100, start: 0 }}
+        >
+          <Note
+            title={note.noteTitle}
+            content={note.noteContent}
+            todos={note.noteTodos}
+            color={note.noteColor}
+            dragged={currentlyDragged === idx}
+            hovered={currentlyHovered === idx}
+            draggable={notesDraggable}
+            on:selection={(event) => handleSelection(event, idx)}
+            on:dragstart={(event) => startDrag(event, idx)}
+            on:drop={(event) => handleDrop(event, idx)}
+            on:dragenter={() => (currentlyHovered = idx)}
+            on:delete={() => handleDelete(idx, note.noteContent)}
+            on:deleteTodoNote={() => handelDeleteTodoNote(idx)}
+            on:openNote={() => handleNoteOpen(idx)}
+            on:changeColor={(event) => handleChangeColor(event, idx)}
+            on:updateTodoContent={(event) => handelTodoContentUpdate(event, idx)}
+            on:updateTodoStatus={(event) => handelTodoStatusUpdate(event, idx)}
+            on:todoItemDelete={(event) => handleTodoItemDelete(event, idx)}
+          />
+        </div>
+      {/each}
+    {:else}
+      {#each deletedNotes as note, idx (note)}
+        <div
+          class="main__note"
+          class:opened={idx === currentlyOpen}
+          animate:flip={{ duration: 200 }}
+          in:scale|locale={{ duration: 100, start: 0 }}
+          out:scale|locale={{ duration: 100, start: 0 }}
+        >
+          <Note
+            title={note.noteTitle}
+            content={note.noteContent}
+            todos={note.noteTodos}
+            color={note.noteColor}
+            dragged={currentlyDragged === idx}
+            hovered={currentlyHovered === idx}
+            draggable={notesDraggable}
+            on:selection={(event) => handleSelection(event, idx)}
+            on:dragstart={(event) => startDrag(event, idx)}
+            on:drop={(event) => handleDrop(event, idx)}
+            on:dragenter={() => (currentlyHovered = idx)}
+            on:delete={() => handleDelete(idx, note.noteContent)}
+            on:deleteTodoNote={() => handelDeleteTodoNote(idx)}
+            on:openNote={() => handleNoteOpen(idx)}
+            on:changeColor={(event) => handleChangeColor(event, idx)}
+            on:updateTodoContent={(event) => handelTodoContentUpdate(event, idx)}
+            on:updateTodoStatus={(event) => handelTodoStatusUpdate(event, idx)}
+            on:todoItemDelete={(event) => handleTodoItemDelete(event, idx)}
+          />
+        </div>
+      {/each}
+    {/if}
   </div>
 </main>
 
@@ -309,18 +349,21 @@
 
 <style lang="scss">
   .header {
+    grid-row: 1 /2;
+    grid-column: 1 / -1;
+
     width: 100vw;
+    max-height: 6.4rem;
     background-color: #fff;
 
-    position: fixed;
-    top: 0;
-    left: 0;
     z-index: 1000;
   }
 
   .sidenav {
-    position: fixed;
-    height: calc(100% - 6.4rem);
+    grid-row: 2 /-1;
+    grid-column: 1 / 2;
+
+    height: 100%;
     top: 6.4rem;
   }
 
@@ -328,17 +371,19 @@
     width: 100%;
     height: 100%;
 
-    margin: 6.4rem auto 0 27.6rem;
-
     position: relative;
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: center;
+
+    &--no-sidenav {
+      grid-column: 1 / -1;
+    }
 
     &__generator {
-      margin: 3.2rem auto 1.6rem auto;
-      align-self: center;
+      width: 100%;
     }
 
     &__notes {
@@ -366,7 +411,7 @@
 
   .note-full {
     width: 100%;
-    height: 120vh;
+    height: 100vh;
 
     background-color: transparent;
 

@@ -262,7 +262,8 @@
 
 <style lang="scss">
   .note-generator {
-    width: 60rem;
+    width: 100%;
+    max-width: 60rem;
 
     border-radius: 8px;
     border: 1px solid var(--color-gray-light-1);
@@ -271,6 +272,7 @@
     display: grid;
     grid-template-columns: 1fr 2.3rem;
     row-gap: 1rem;
+    margin: 3.2rem auto 1.6rem auto;
     padding-top: 0.4rem;
 
     transition: all 200ms ease-in;

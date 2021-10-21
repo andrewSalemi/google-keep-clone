@@ -1,5 +1,5 @@
 <script>
-  let current = "note";
+  export let current = "note";
 </script>
 
 <nav class="sidenav">
@@ -33,7 +33,6 @@
 <style lang="scss">
   .sidenav {
     height: 100%;
-    width: fit-content;
 
     padding-top: 0.8rem;
 

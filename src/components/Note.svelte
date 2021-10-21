@@ -105,7 +105,9 @@
         </div>
       {/each}
     {:else}
-      {content}
+      <p class="note__content">
+        {content}
+      </p>
     {/if}
   </p>
   <p />
@@ -194,9 +196,14 @@
       font-size: 1.6rem;
       font-weight: 400;
       color: var(--color-gray-dark-1);
-      word-wrap: break-word;
 
       margin-bottom: 0.4rem;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* number of lines to show */
+      -webkit-box-orient: vertical;
     }
 
     &__btn-1 {

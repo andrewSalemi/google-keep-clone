@@ -112,6 +112,7 @@
       class="note-full__content"
       type="text"
       bind:value={noteContent}
+      rows="20"
     />
   {:else}
     <ul class="note-full__todos" bind:this={todoList}>
@@ -191,7 +192,7 @@
 <style lang="scss">
   .note-full {
     width: 60rem;
-    min-height: 20rem;
+    min-height: fit-content;
 
     border-radius: 8px;
     border: 1px solid var(--color-gray-light-1);

@@ -2,6 +2,8 @@
   import Btn from "./Btn.svelte";
   import { createEventDispatcher } from "svelte";
 
+  export let sidebarOpen = true;
+
   let searchInput;
   let searchValue = "";
 
@@ -14,7 +16,7 @@
 
 <header class="header">
   <div class="header__sidenav">
-    <Btn iconName="menu" enabled={true} />
+    <Btn iconName="menu" enabled={true} on:click={() => (sidebarOpen = !sidebarOpen)} />
     <div class="header__position">
       <img class="header__logo" src="assets/images/keep-logo.png" alt="Keep logo" />
       <p class="header__text">Keep</p>
