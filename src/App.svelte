@@ -411,21 +411,17 @@
 
   .note-full {
     width: 100%;
-    height: 100vh;
+    height: 100%;
 
     background-color: transparent;
 
     position: absolute;
-    top: 40%;
-    left: 50%;
 
     z-index: 999999;
 
     display: flex;
     justify-content: center;
     align-items: center;
-
-    transform: translate(-50%, -50%);
 
     transition: background-color 200ms ease-in;
 
